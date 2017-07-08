@@ -6,6 +6,14 @@
     <% } %>
     <form method="post">
         <div class="form-group">
+            <label for="role">Type</label>
+            <select class ="form-control" id="tpye" name="type" value="<%= locals.tpye || '' %>" required />
+              <option selected="selected">Select</option>
+              <option value="student">student</option>
+              <option value="instructor">instructor</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="firstName">First name</label>
             <input type="text" name="firstName" id="firstName" class="form-control" value="<%= locals.firstName || '' %>" required />
         </div>

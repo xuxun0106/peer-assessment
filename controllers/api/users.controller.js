@@ -3,6 +3,9 @@ var express = require('express');
 var router = express.Router();
 var userService = require('services/user.service');
 
+var ldap = require('ldapjs');
+
+
 // routes
 router.post('/authenticate', authenticateUser);
 router.post('/register', registerUser);
@@ -13,6 +16,12 @@ router.delete('/:_id', deleteUser);
 module.exports = router;
 
 function authenticateUser(req, res) {
+  var client = ldap.createClient({
+   url: 'ldaps://ldaps-vip.cc.ic.ac.uk: 636'
+  });
+
+  client.bind()
+
     userService.authenticate(req.body.username, req.body.password)
         .then(function (token) {
             if (token) {

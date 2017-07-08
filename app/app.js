@@ -4,19 +4,40 @@
     angular
         .module('app', ['ui.router'])
         .config(config)
-        .run(run);
+        .run(run)
+        .controller('PermissionCtrl',['$scope', 'UserService',function($scope, UserService){
+          $scope.user = {};
+
+          initController();
+
+          function initController() {
+            UserService.GetCurrent().then(function (user) {
+                  $scope.user = user;
+                  $scope.permissions =
+                  {
+                    showForm : isInstructor()
+                  }
+              });
+            }
+
+          function isInstructor() {
+              return ($scope.user.type === 'instructor');
+          }
+        }]);
+
+
 
     function config($stateProvider, $urlRouterProvider) {
         // default route
         $urlRouterProvider.otherwise("/");
 
         $stateProvider
-            .state('home', {
+            .state('project', {
                 url: '/',
-                templateUrl: 'home/index.html',
-                controller: 'Home.IndexController',
+                templateUrl: 'project/index.html',
+                controller: 'Project.IndexController',
                 controllerAs: 'vm',
-                data: { activeTab: 'home' }
+                data: { activeTab: 'project' }
             })
             .state('account', {
                 url: '/account',
@@ -24,6 +45,16 @@
                 controller: 'Account.IndexController',
                 controllerAs: 'vm',
                 data: { activeTab: 'account' }
+            })
+            .state('form', {
+                url: '/form',
+                templateUrl: 'form/index.html',
+                controller: 'Form.IndexController',
+                controllerAs: 'vm',
+                data: {
+                  activeTab: 'form',
+                  permissions: ['instructor']
+                }
             });
     }
 

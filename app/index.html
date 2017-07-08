@@ -2,17 +2,18 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>MEAN Stack User Registration and Login Example Application</title>
+    <title>Peer Assessment System</title>
 
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
     <link href="app-content/app.css" rel="stylesheet" />
 </head>
-<body class="container">
+<body class="container" ng-controller="PermissionCtrl">
     <!-- header -->
     <header>
         <ul class="nav nav-tabs">
-            <li ng-class="{active: activeTab === 'home'}"><a ui-sref="home">Home</a></li>
+            <li ng-class="{active: activeTab === 'project'}"><a ui-sref="project">Project</a></li>
             <li ng-class="{active: activeTab === 'account'}"><a ui-sref="account">Account</a></li>
+            <li ng-show="permissions.showForm" ng-class="{active: activeTab === 'form'}"><a ui-sref="form">Form</a></li>
             <li><a href="/login" target="_self">Logout</a></li>
         </ul>
         <div class="flash-message" ng-if="flash">
@@ -35,7 +36,9 @@
     <script src="app.js"></script>
     <script src="app-services/user.service.js"></script>
     <script src="app-services/flash.service.js"></script>
-    <script src="home/index.controller.js"></script>
+    <script src="app-services/form.service.js"></script>
+    <script src="project/index.controller.js"></script>
     <script src="account/index.controller.js"></script>
+    <script src="form/index.controller.js"></script>
 </body>
 </html>
