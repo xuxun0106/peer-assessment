@@ -1,5 +1,5 @@
 ﻿{
     "connectionString": "mongodb://localhost:27017/peer-assessment-system",
     "apiUrl": "http://localhost:3000/api",
-    "secret": "REPLACE THIS WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
+    "secret": "2017 Msc Individual Project"
 }
