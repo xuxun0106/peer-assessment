@@ -7,11 +7,7 @@ var jwt = require('jsonwebtoken');
 const DN_FOR_DOC = 'OU=doc,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
 const DN_FOR_ALL = 'OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
 
-var user = {
-  // username: null,
-  // type: null,
-  // class: null
-};
+var user = {};
 
 // routes
 router.post('/authenticate', authenticateUser);
