@@ -15,7 +15,7 @@
                   $scope.user = user;
                   $scope.permissions =
                   {
-                    showForm : isInstructor()
+                    instructor : isInstructor()
                   }
               });
             }
@@ -36,23 +36,16 @@
                 url: '/',
                 templateUrl: 'project/index.html',
                 controller: 'Project.IndexController',
-                controllerAs: 'vm',
+                controllerAs: 'projectCtrl',
                 data: { activeTab: 'project' }
             })
-            .state('account', {
-                url: '/account',
-                templateUrl: 'account/index.html',
-                controller: 'Account.IndexController',
-                controllerAs: 'vm',
-                data: { activeTab: 'account' }
-            })
-            .state('form', {
-                url: '/form',
-                templateUrl: 'form/index.html',
-                controller: 'Form.IndexController',
-                controllerAs: 'vm',
+            .state('question', {
+                url: '/question',
+                templateUrl: 'question/index.html',
+                controller: 'Question.IndexController',
+                controllerAs: 'questionCtrl',
                 data: {
-                  activeTab: 'form',
+                  activeTab: 'question',
                   permissions: ['instructor']
                 }
             });

@@ -12,8 +12,7 @@
     <header>
         <ul class="nav nav-tabs">
             <li ng-class="{active: activeTab === 'project'}"><a ui-sref="project">Project</a></li>
-            <li ng-class="{active: activeTab === 'account'}"><a ui-sref="account">Account</a></li>
-            <li ng-show="permissions.showForm" ng-class="{active: activeTab === 'form'}"><a ui-sref="form">Form</a></li>
+            <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'question'}"><a ui-sref="question">Question</a></li>
             <li><a href="/login" target="_self">Logout</a></li>
         </ul>
         <div class="flash-message" ng-if="flash">
@@ -36,9 +35,8 @@
     <script src="app.js"></script>
     <script src="app-services/user.service.js"></script>
     <script src="app-services/flash.service.js"></script>
-    <script src="app-services/form.service.js"></script>
+    <script src="app-services/question.service.js"></script>
     <script src="project/index.controller.js"></script>
-    <script src="account/index.controller.js"></script>
-    <script src="form/index.controller.js"></script>
+    <script src="question/index.controller.js"></script>
 </body>
 </html>

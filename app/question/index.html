@@ -1,0 +1,48 @@
+<h2>My questions</h2>
+<div>
+  <button id="new" type="button" class="btn btn-default">New Question</button>
+  <div class="question-creator">
+    <h3>Creat a new question</h3>
+    <form class="question-builder" method="post">
+      <div class="form-group">
+        <input type="text" class="form-control" name="question" id="question" ng-model="questionCtrl.newq.text" placeholder="Your question here" required>
+      </div>
+      <div class="form-group dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">Type<span class="caret"></span>
+          </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" ng-model="questionCtrl.newq.type">
+          <li role="presentation">
+            <a role="menuitem" ng-value="radio">single select</a>
+          </li>
+          <li role="presentation">
+            <a role="menuitem" ng-value="checkbox">multi select</a>
+          </li>
+          <li role="presentation">
+            <a role="menuitem" ng-value="text">text</a>
+          </li>
+          <li role="presentation">
+            <a role="menuitem" ng-value="scale">scale</a>
+          </li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <button class="submit btn btn-default" type="submit">Submit!</button>
+        <button class="reset btn btn-default" type="button">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div>
+
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#new').on('click', function() {
+      $('.question-creator').show();
+    });
+    $('.cancel').on('click', function() {
+      $('.question-creator').hide();
+    });
+  })
+</script>

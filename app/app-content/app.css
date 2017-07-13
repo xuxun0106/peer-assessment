@@ -5,3 +5,7 @@
 .flash-message {
     margin-top: 20px;
 }
+
+.question-creator {
+  display: none;
+}
