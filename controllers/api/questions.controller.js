@@ -4,13 +4,12 @@ var router = express.Router();
 var questionService = require('services/question.service');
 
 router.get('/:username', getByAuthor);
-router.post('/create', createQuestion);
+router.post('/', createQuestion);
 router.put('/:_id', updateQuestion);
 router.delete('/:_id', deleteQuestion);
 
 module.exports = router;
 
-//TODO
 function createQuestion(req, res) {
   questionService.create(req.body)
       .then(function() {
@@ -22,7 +21,7 @@ function createQuestion(req, res) {
 }
 
 function getByAuthor(req, res) {
-  questionService.getByAuthor(req.body)
+  questionService.getByAuthor(req.params.username)
       .then(function(data) {
         res.send(data);
       })
@@ -42,7 +41,7 @@ function updateQuestion(req, res) {
 }
 
 function deleteQuestion(req, res) {
-   questionService.delete(req.params.id)
+   questionService.delete(req.params._id)
         .then(function () {
             res.sendStatus(200);
         })

@@ -5,7 +5,7 @@ var db = mongo.db(config.connectionString, { native_parser: true });
 db.bind('questions');
 
 var service = {};
-//TODO
+
 service.create = create;
 service.getByAuthor = getByAuthor;
 service.update = update;
@@ -40,11 +40,11 @@ function create(Param) {
     return deferred.promise;
 }
 
-function getByAuthor(author) {
+function getByAuthor(_author) {
     var deferred = Q.defer();
 
     db.questions.find({
-      author : author
+      author : _author
     }).toArray(function(err, data) {
       if (err) {
         deferred.reject(err);
@@ -83,14 +83,14 @@ function update(_id, newQuestion) {
   return deferred.promise;
 }
 
-function _delete(_id) {
+function _delete(id) {
     var deferred = Q.defer();
 
-    db.users.remove(
-        { _id: mongo.helper.toObjectID(_id) },
+    db.questions.remove(
+        { _id: mongo.helper.toObjectID(id) },
         function (err) {
             if (err) deferred.reject(err);
-
+            else
             deferred.resolve();
         });
 
