@@ -3,7 +3,6 @@ var express = require('express');
 var router = express.Router();
 var ldap = require('ldapjs');
 var jwt = require('jsonwebtoken');
-var userService = require('services/user.service');
 
 const DN_FOR_DOC = 'OU=doc,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
 const DN_FOR_ALL = 'OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
