@@ -9,3 +9,11 @@
 .question-creator {
   display: none;
 }
+
+.display {
+  margin-top: 50px;
+}
+
+.width-control {
+  width: 400px !important;
+}

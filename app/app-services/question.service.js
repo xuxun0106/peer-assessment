@@ -9,7 +9,7 @@
         var service = {};
 
         service.getById = GetById;
-        service.getByAuthor = GetByAuthor;
+        service.GetByAuthor = GetByAuthor;
         service.Create = Create;
         service.Update = Update;
         service.Delete = Delete;

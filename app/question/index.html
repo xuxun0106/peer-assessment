@@ -1,47 +1,70 @@
-<h2>My questions</h2>
-<div>
-  <button id="new" type="button" class="btn btn-default">New Question</button>
-  <div class="question-creator">
-    <h3>Creat a new question</h3>
-    <form class="question-builder" method="post">
-      <div class="form-group">
-        <input type="text" class="form-control" name="question" id="question" ng-model="questionCtrl.newq.text" placeholder="Your question here" required>
+<h2>My questions
+  <button id="new" type="button" class="btn btn-default pull-right" ng-click="questionCtrl.emptyQuestion()">New Question</button>
+</h2>
+<div class="question-creator">
+  <h3>Create a new question</h3>
+  <form method="post" class="question-builder">
+    <div class="form-group">
+      <input type="text" class="form-control" name="question" ng-model="questionCtrl.newq.text" placeholder="Your question here">
+    </div>
+    <div class="dropdown form-group">
+      <button type="button" class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">Type
+          <span class="caret"></span>
+        </button>
+      <span class="label label-primary">{{questionCtrl.newq.type}}</span>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation" ng-repeat="type in questionCtrl.types">
+          <a role="menuitem" ng-click="questionCtrl.setType(type)">{{type}}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="question"></div>
+    <div class="form-group">
+      <button class="submit btn btn-default" type="submit" ng-click="questionCtrl.saveQuestion()">Submit</button>
+      <button class="reset btn btn-default" type="button" ng-click="questionCtrl.emptyQuestion()">Cancel</button>
+    </div>
+  </form>
+</div>
+<div class="display">
+  <div class="panel panel-primary" ng-repeat="q in questionCtrl.questions track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
+    </div>
+    <div class="panel-body">
+      <div class="element-display form-group">
+        <div class="radio-inline" ng-repeat="level in q.levels" ng-if="q.type=='Single choice'">
+          <label><input type="radio" name="optradio" disabled>{{level}}</label>
+        </div>
+        <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
+          <label><input type="checkbox" disabled>{{option}}</label>
+        </div>
+        <textarea rows="2" ng-if="q.type=='Text'" class="width-control" disabled></textarea>
+        <input type="range" min="0" max="100" step="5" class="width-control" ng-if="q.type=='Slider'" disabled/>
       </div>
-      <div class="form-group dropdown">
-        <button type="button" class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">Type<span class="caret"></span>
-          </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" ng-model="questionCtrl.newq.type">
-          <li role="presentation">
-            <a role="menuitem" ng-value="radio">single select</a>
-          </li>
-          <li role="presentation">
-            <a role="menuitem" ng-value="checkbox">multi select</a>
-          </li>
-          <li role="presentation">
-            <a role="menuitem" ng-value="text">text</a>
-          </li>
-          <li role="presentation">
-            <a role="menuitem" ng-value="scale">scale</a>
-          </li>
-        </ul>
-      </div>
-      <div class="form-group">
-        <button class="submit btn btn-default" type="submit">Submit!</button>
-        <button class="reset btn btn-default" type="button">Cancel</button>
-      </div>
-    </form>
+      <button type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.deleteQuestion(q)">
+              <span class="glyphicon glyphicon-trash"></span>
+      </button>
+      <!-- <button id="edit" type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.editQuestion(q, $index)">
+              <span class="glyphicon glyphicon-pencil"></span>
+      </button> -->
+    </div>
   </div>
 </div>
-<div>
 
-</div>
+
+
+
+
+
 
 <script type="text/javascript">
   $(document).ready(function() {
     $('#new').on('click', function() {
-      $('.question-creator').show();
+      $('.question-creator').slideToggle();
     });
-    $('.cancel').on('click', function() {
+
+    $('.reset').on('click', function() {
+      $('#questionText').val('').trigger('input').trigger('change');
       $('.question-creator').hide();
     });
   })

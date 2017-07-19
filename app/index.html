@@ -1,42 +1,53 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8" />
-    <title>Peer Assessment System</title>
-
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="app-content/app.css" rel="stylesheet" />
+  <meta charset="utf-8" />
+  <title>Peer Assessment System</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="app-content/app.css" rel="stylesheet" />
+  <link rel="stylesheet" href="app-content/js/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
 </head>
+
 <body class="container" ng-controller="PermissionCtrl">
-    <!-- header -->
-    <header>
-        <ul class="nav nav-tabs">
-            <li ng-class="{active: activeTab === 'project'}"><a ui-sref="project">Project</a></li>
-            <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'question'}"><a ui-sref="question">Question</a></li>
-            <li><a href="/login" target="_self">Logout</a></li>
-        </ul>
-        <div class="flash-message" ng-if="flash">
-            <div class="{{'alert alert-' + flash.type}}" ng-bind="flash.message"></div>
-        </div>
-    </header>
+  <!-- header -->
+  <header>
+    <ul class="nav nav-tabs">
+      <li ng-class="{active: activeTab === 'assessment'}"><a ui-sref="assessment">Assesements</a></li>
+      <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'question'}"><a ui-sref="question">Questions</a></li>
+      <li><a href="/login" target="_self">Logout</a></li>
+    </ul>
+    <div class="flash-message" ng-if="flash">
+      <div class="{{'alert alert-' + flash.type}}" ng-bind="flash.message"></div>
+    </div>
+  </header>
 
-    <!-- main -->
-    <main ui-view></main>
+  <!-- main -->
+  <main ui-view></main>
 
-    <!-- footer -->
-    <footer></footer>
+  <!-- footer -->
+  <footer></footer>
 
-    <!-- external scripts -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+  <!-- external scripts -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+  <script src="app-content/js/angular-modal-service/dst/angular-modal-service.min.js"></script>
 
-    <!-- application scripts -->
-    <script src="app.js"></script>
-    <script src="app-services/user.service.js"></script>
-    <script src="app-services/flash.service.js"></script>
-    <script src="app-services/question.service.js"></script>
-    <script src="project/index.controller.js"></script>
-    <script src="question/index.controller.js"></script>
+  <script type="text/javascript" src="app-content/js/moment/moment.js"></script>
+  <script type="text/javascript" src="app-content/js/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+  <script type="text/javascript" src="app-content/js/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js"></script>
+
+
+  <!-- application scripts -->
+  <script src="app.js"></script>
+  <script src="app-services/user.service.js"></script>
+  <script src="app-services/flash.service.js"></script>
+  <script src="app-services/question.service.js"></script>
+  <script src="assessment/index.controller.js"></script>
+  <script src="question/index.controller.js"></script>
 </body>
+
 </html>
