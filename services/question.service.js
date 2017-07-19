@@ -16,10 +16,10 @@ module.exports = service;
 function create(Param) {
     var deferred = Q.defer();
 
-    db.questions.findOne(Param, function (err, user) {
+    db.questions.findOne(Param, function (err, q) {
          if (err) deferred.reject(err);
 
-         if (user) {
+         if (q) {
             deferred.reject('Question already exists!');
          } else {
             createQuestion();

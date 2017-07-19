@@ -26,7 +26,7 @@
   </form>
 </div>
 <div class="display">
-  <div class="panel panel-primary" ng-repeat="q in questionCtrl.questions">
+  <div class="panel panel-primary" ng-repeat="q in questionCtrl.questions track by $index">
     <div class="panel-heading">
       <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
     </div>
@@ -41,12 +41,12 @@
         <textarea rows="2" ng-if="q.type=='Text'" class="width-control" disabled></textarea>
         <input type="range" min="0" max="100" step="5" class="width-control" ng-if="q.type=='Slider'" disabled/>
       </div>
-      <button type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.deleteQuestion(q, this)">
+      <button type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.deleteQuestion(q)">
               <span class="glyphicon glyphicon-trash"></span>
       </button>
-      <button type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.editQuestion(q)">
+      <!-- <button id="edit" type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.editQuestion(q, $index)">
               <span class="glyphicon glyphicon-pencil"></span>
-      </button>
+      </button> -->
     </div>
   </div>
 </div>

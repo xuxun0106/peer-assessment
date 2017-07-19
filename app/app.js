@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app', ['ui.router'])
+        .module('app', ['ui.router', 'angularModalService', 'ui.bootstrap.datetimepicker'])
         .config(config)
         .run(run)
         .controller('PermissionCtrl',['$scope', 'UserService',function($scope, UserService){
@@ -32,12 +32,12 @@
         $urlRouterProvider.otherwise("/");
 
         $stateProvider
-            .state('project', {
+            .state('assessment', {
                 url: '/',
-                templateUrl: 'project/index.html',
-                controller: 'Project.IndexController',
-                controllerAs: 'projectCtrl',
-                data: { activeTab: 'project' }
+                templateUrl: 'assessment/index.html',
+                controller: 'Assessment.IndexController',
+                controllerAs: 'assessmentCtrl',
+                data: { activeTab: 'assessment' }
             })
             .state('question', {
                 url: '/question',
