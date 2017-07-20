@@ -7,10 +7,8 @@
     .controller('Assessment.IndexController', ['UserService', 'ModalService', '$scope', Controller])
     //TODO
     .controller('NewController', [
-      '$scope', '$element', '$http', 'title', 'close', 'ModalService',
+      '$scope', '$element', 'title', 'close', 'ModalService',
       function($scope, $element, $http, title, close, ModalService) {
-        var url = "https://dbc.doc.ic.ac.uk/api/teachdbs/views/curr/courses";
-
         
 
         $scope.course = null;

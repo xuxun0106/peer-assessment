@@ -9,11 +9,17 @@
         var service = {};
 
         service.GetCurrent = GetCurrent;
+        service.GetAllCourses = GetAllCourses;
+
 
         return service;
 
         function GetCurrent() {
             return $http.get('/api/users/current').then(handleSuccess, handleError);
+        }
+
+        function GetCourses() {
+            return $http.get('/api/users/allcourses').then(handleSuccess, handleError);
         }
 
 
