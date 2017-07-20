@@ -18,7 +18,7 @@
             return $http.get('/api/users/current').then(handleSuccess, handleError);
         }
 
-        function GetCourses() {
+        function GetAllCourses() {
             return $http.get('/api/users/allcourses').then(handleSuccess, handleError);
         }
 

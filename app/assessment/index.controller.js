@@ -7,9 +7,15 @@
     .controller('Assessment.IndexController', ['UserService', 'ModalService', '$scope', Controller])
     //TODO
     .controller('NewController', [
-      '$scope', '$element', 'title', 'close', 'ModalService',
-      function($scope, $element, $http, title, close, ModalService) {
-        
+      '$scope', '$element', 'title', 'close', 'ModalService', 'UserService',
+      function($scope, $element, title, close, ModalService, UserService) {
+
+        UserService.GetAllCourses().then(function(data) {
+          console.log(data);
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
 
         $scope.course = null;
         $scope.name = null;
