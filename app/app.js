@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('app', ['ui.router', 'angularModalService', 'ui.bootstrap.datetimepicker'])
+        .module('app', ['ui.router', 'angularModalService', 'ui.bootstrap.datetimepicker', 'rzModule'])
         .config(config)
         .run(run)
         .controller('PermissionCtrl',['$scope', 'UserService',function($scope, UserService){

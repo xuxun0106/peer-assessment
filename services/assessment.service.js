@@ -9,6 +9,7 @@ db.bind('assessments');
 var service = {};
 
 service.create = create;
+service.getByAuthor = getByAuthor;
 service.getByCourse = getByCourse;
 service.update = update;
 service.delete = _delete;
@@ -18,15 +19,6 @@ module.exports = service;
 function create(Param) {
   var deferred = Q.defer();
 
-  // db.assessments.findOne(Param, function(err, a) {
-  //   if (err) deferred.reject(err);
-  //
-  //   if (a) {
-  //     deferred.reject('Assessment for this course already exists!');
-  //   } else {
-  //     createAssessment();
-  //   }
-  // });
   createAssessment();
 
   function createAssessment() {
@@ -43,20 +35,36 @@ function create(Param) {
   return deferred.promise;
 }
 
-function getByCourse(_course) {
-  var deferred = Q.defer();
+function getByCourse(_code) {
+    var deferred = Q.defer();
+    
+    db.assessments.find({
+      courseCode : _code
+    }).toArray(function(err, data) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(data);
+      }
+    });
 
-  db.assessments.find({
-    course: _course
-  }).toArray(function(err, data) {
-    if (err) {
-      deferred.reject(err);
-    } else {
-      deferred.resolve(data);
-    }
-  });
+    return deferred.promise;
+}
 
-  return deferred.promise;
+function getByAuthor(_author) {
+    var deferred = Q.defer();
+
+    db.assessments.find({
+      author : _author
+    }).toArray(function(err, data) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(data);
+      }
+    });
+
+    return deferred.promise;
 }
 
 function update(_id, newAssessment) {

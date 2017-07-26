@@ -1,8 +1,85 @@
-﻿<h1>Hi {{assessmentCtrl.user.username}}</h1>
-<div id="ongoing">
+<h1>Hi {{assessmentCtrl.user}}
+<button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.show()" ng-show="assessmentCtrl.usertype==='instructor'">New Assessment</button>
+</h1>
 
+
+<!-- edit copy delete -->
+
+
+<div class="display ongoing-for-student" ng-show="assessmentCtrl.usertype==='student'">
+  <h2>Ongoing Assessment</h2>
+  <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.studentOngoing track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
+    </div>
+    <div class="panel-body">
+      <b>From: </b>{{a.startDate}}
+      <b>To: </b>{{a.endDate}}
+      <button type="button" class="btn btn-default btn-sm pull-right" ng-click="assessmentCtrl.formGroup(a)">
+              <span class="glyphicon glyphicon-user"></span>
+      </button>
+      <button type="button" class="btn btn-default btn-sm pull-right" ng-click="assessmentCtrl.doAssessment(a)">
+              <span class="glyphicon glyphicon-pencil"></span>
+      </button>
+    </div>
+  </div>
 </div>
-<!-- <div id="form-creator" ng-show="assessmentCtrl.user.type==='instructor'"> -->
-<div id="form-creator">
-<button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.show()">New Assessment</button>
+
+
+<div class="display past-for-student" ng-show="assessmentCtrl.usertype==='student'">
+  <h2>Past Assessment</h2>
+  <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.studentPast track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
+    </div>
+    <div class="panel-body">
+      <b>From: </b>{{a.startDate}}
+      <b>To: </b>{{a.endDate}}
+      <button type="button" class="btn btn-default btn-sm pull-right" ng-click="">
+              <span class="glyphicon glyphicon-eye-open"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
+<div class="display ongoing-for-instructor" ng-show="assessmentCtrl.usertype==='instructor'">
+  <h2>Ongoing Assessment</h2>
+  <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorOngoing track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
+    </div>
+    <div class="panel-body">
+      <b>From: </b>{{a.startDate}}
+      <b>To: </b>{{a.endDate}}
+    </div>
+  </div>
+</div>
+
+<!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
+<div class="display upcoming-for-instructor" ng-show="assessmentCtrl.usertype==='instructor'">
+  <h2>Upcomimg Assessment</h2>
+  <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorUpcoming track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
+    </div>
+    <div class="panel-body">
+      <b>From: </b>{{a.startDate}}
+      <b>To: </b>{{a.endDate}}
+    </div>
+  </div>
+</div>
+
+<!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
+<div class="display past-for-instructor" ng-show="assessmentCtrl.usertype==='instructor'">
+  <h2>Past Assessment</h2>
+  <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorPast track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
+    </div>
+    <div class="panel-body">
+      <b>From: </b>{{a.startDate}}
+      <b>To: </b>{{a.endDate}}
+    </div>
+  </div>
 </div>

@@ -17,3 +17,7 @@
 .width-control {
   width: 400px !important;
 }
+
+.make-inline {
+  display: inline-block;
+}

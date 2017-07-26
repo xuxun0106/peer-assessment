@@ -4,130 +4,169 @@ var express = require('express');
 var router = express.Router();
 var ldap = require('ldapjs');
 var jwt = require('jsonwebtoken');
-var Kerberos = require('kerberos').Kerberos;
-var kerberos = new Kerberos();
-var http = require('http');
-
-const DN_FOR_DOC = 'OU=doc,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
-const DN_FOR_ALL = 'OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
-
-var user = {};
+var https = require('https');
+var userService = require('services/user.service');
 
 // routes
 router.post('/authenticate', authenticateUser);
 router.get('/current', getCurrentUser);
-router.get('/allcourses', getAllCourses)
+router.get('/allcourses', getAllCourses);
 
 module.exports = router;
 
+
 function getAllCourses(req, res) {
+  var allcourses;
   var options = {
     hostname: "dbc.doc.ic.ac.uk",
-    path: "/api/teachdbs/views/curr/courses"
+    path: "/api/teachdbs/views/curr/courses",
+    auth: "xx4615:XUxu4088?"
   };
 
-  var req = httpget(options, function(res) {
-    var body = '';
-    res.on('data', function(chunk) {
+  var courses = https.get(options, function(response) {
+    var body = "";
+    response.on('data', function(chunk) {
       body += chunk;
     });
-    res.on('end', function() {
-      console.log("BODY: " + body);
+    response.on('end', function() {
+      allcourses = JSON.parse(body);
     });
   });
-
-  req.on('resubmit', function(newreq) {
-    console.log('request resubmitted');
-    req = newreq;
-  });
-
-  return;
+  res.send(allcourses);
 }
-
-function httpget(opts, callback) {
-  console.log('submitting to ' + (opts.hostname || opts.host) + ' with authorization header: ' + (opts.headers || {}).authorization);
-  var req = http.get(opts, function(res) {
-    if (res.statusCode == 401) {
-      submitWithAuthorization(req, opts, callback);
-      return;
-    }
-    callback(res);
-  });
-  return req;
-}
-
-function submitWithAuthorization(oldreq, opts, callback) {
-  kerberos.authGSSClientInit("HTTP@" + (opts.hostname || opts.host), 0, function(err, ctx) {
-    if (err) {
-      throw new Error("" + err);
-    }
-    console.log('done init ' + ctx);
-    kerberos.authGSSClientStep(ctx, "", function(err) {
-      if (err) {
-        throw new Error("" + err);
-      }
-      console.log('done step ' + ctx.response);
-      var headers = opts.headers || {};
-      headers.authorization = "Negotiate " + ctx.response;
-      opts.headers = headers;
-      var newreq = httpget(opts, callback);
-
-      // tell oldReq "owner" about newReq. resubmit is an "unofficial" event
-      oldreq.emit('resubmit', newreq);
-      kerberos.authGSSClientClean(ctx, function(err) {
-        if (err) {
-          throw new Error("" + err);
-        }
-      });
-    });
-  });
-}
-
-
-
-
-
-
-
 
 
 function authenticateUser(req, res) {
-
-  user.username = req.body.username;
-  var dn = `CN=${req.body.username},${DN_FOR_DOC}`;
-  var ldapClient = ldap.createClient({
-    url: "ldaps://ldaps-vip.cc.ic.ac.uk:636"
-  });
-
-  ldapClient.bind(dn, req.body.password, function(err) {
-    if (err) {
-      console.log(err);
+  userService.authenticate(req.body.username, req.body.password)
+    .then(function(token) {
+      if (token) {
+        // authentication successful
+        res.send({
+          token: token
+        });
+      } else {
+        // authentication failed
+        res.sendStatus(401);
+      }
+    })
+    .catch(function(err) {
       res.status(400).send(err);
-    } else {
-      ldapClient.compare(dn, 'employeeType', 'student,member', function(err, matched) {
-        if (err) {
-          console.log(err);
-        } else if (matched) {
-          user.type = 'student';
-        } else {
-          user.type = 'instructor';
-        }
-      });
-      res.send({
-        token: jwt.sign({
-          username: req.body.username
-        }, config.secret)
-      });
-    }
-  });
-} //TODO: error code and message
+    });
+}
 
 
 function getCurrentUser(req, res) {
-  //user role  class     employeeType
-  if (user !== {}) {
-    res.send(user);
-  } else {
-    res.sendStatus(404);
-  }
+  userService.getById(req.user.sub)
+    .then(function(user) {
+      if (user) {
+        res.send(user);
+      } else {
+        res.sendStatus(404);
+      }
+    })
+    .catch(function(err) {
+      res.status(400).send(err);
+    });
 }
+
+
+
+
+
+
+// const DN_FOR_DOC = 'OU=doc,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
+// const DN_FOR_ALL = 'OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk';
+//
+// var user = {};
+// var allcourses = {};
+// var studentCourses = {};
+//
+// // routes
+// router.post('/authenticate', authenticateUser);
+// router.get('/current', getCurrentUser);
+// router.get('/allcourses', getAllCourses);
+// router.get('/courses', getCourses);
+//
+// module.exports = router;
+//
+// function getCourses(req, res) {
+//     res.send(studentCourses);
+// }
+//
+// function getAllCourses(req, res) {
+//     res.send(allcourses);
+// }
+//
+//
+// function authenticateUser(req, res) {
+//
+//   user.username = req.body.username;
+//   var dn = `CN=${req.body.username},${DN_FOR_DOC}`;
+//   var ldapClient = ldap.createClient({
+//     url: "ldaps://ldaps-vip.cc.ic.ac.uk:636"
+//   });
+//
+//
+//   ldapClient.bind(dn, req.body.password, function(err) {
+//     if (err) {
+//       console.log(err);
+//       res.status(400).send(err);
+//     } else {
+//       var options = {
+//         hostname: "dbc.doc.ic.ac.uk",
+//         path: "/api/teachdbs/views/curr/courses",
+//         auth: req.body.username+":"+req.body.password
+//       };
+//
+//       var courses = https.get(options, function(response) {
+//         var body = "";
+//         response.on('data', function(chunk) {
+//           body += chunk;
+//         });
+//         response.on('end', function() {
+//           allcourses = JSON.parse(body);
+//         });
+//       });
+//
+//       ldapClient.compare(dn, 'employeeType', 'student,member', function(err, matched) {
+//         if (err) {
+//           console.log(err);
+//         } else if (matched) {
+//           user.type = 'student';
+//           var options2 = {
+//             hostname: "dbc.doc.ic.ac.uk",
+//             path: "/api/teachdbs/views/curr/individual/student/courses",
+//             auth: req.body.username+":"+req.body.password
+//           };
+//
+//           var courses2 = https.get(options2, function(response) {
+//             var body = "";
+//             response.on('data', function(chunk) {
+//               body += chunk;
+//             });
+//             response.on('end', function() {
+//               studentCourses = JSON.parse(body);
+//             });
+//           });
+//         } else {
+//           user.type = 'instructor';
+//         }
+//       });
+//       res.send({
+//         token: jwt.sign({
+//           username: req.body.username
+//         }, config.secret)
+//       });
+//     }
+//   });
+// } //TODO: error code and message
+//
+//
+// function getCurrentUser(req, res) {
+//   //user role  class     employeeType
+//   if (user !== {}) {
+//     res.send(user);
+//   } else {
+//     res.sendStatus(404);
+//   }
+// }

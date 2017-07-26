@@ -10,6 +10,7 @@
 
         service.GetCurrent = GetCurrent;
         service.GetAllCourses = GetAllCourses;
+        service.GetCourses = GetCourses;
 
 
         return service;
@@ -22,6 +23,9 @@
             return $http.get('/api/users/allcourses').then(handleSuccess, handleError);
         }
 
+        function GetCourses() {
+            return $http.get('/api/users/courses').then(handleSuccess, handleError);
+        }
 
         // private functions
 

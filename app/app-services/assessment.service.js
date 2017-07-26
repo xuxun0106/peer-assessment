@@ -8,7 +8,8 @@
     function Service($http, $q) {
         var service = {};
 
-        service.getById = GetById;
+        service.GetById = GetById;
+        service.GetByAuthor = GetByAuthor;
         service.GetByCourse = GetByCourse;
         service.Create = Create;
         service.Update = Update;
@@ -21,8 +22,12 @@
             return $http.get('/api/assessments/' + _id).then(handleSuccess, handleError);
         }
 
-        function GetByCourse(_course) {
-            return $http.get('/api/assessments/' + _course).then(handleSuccess, handleError);
+        function GetByAuthor(_username) {
+            return $http.get('/api/assessments/' + _username).then(handleSuccess, handleError);
+        }
+
+        function GetByCourse(_code) {
+            return $http.get('/api/assessments?code=' + _code).then(handleSuccess, handleError);
         }
 
         function Create(assessment) {
