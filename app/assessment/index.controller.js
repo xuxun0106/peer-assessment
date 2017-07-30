@@ -4,8 +4,9 @@
 
   angular
     .module('app')
-    .controller('Assessment.IndexController', ['AssessmentService', 'FlashService', 'UserService', 'ModalService', '$scope',
-      function(AssessmentService, FlashService, UserService, ModalService, $scope) {
+    .controller('Assessment.IndexController', ['AssessmentService', 'FlashService',
+      'UserService', 'ModalService', '$scope', 'ResultService',
+      function(AssessmentService, FlashService, UserService, ModalService, $scope, ResultService) {
         var vm = this;
 
         vm.user = null;
@@ -76,8 +77,30 @@
           }).then(function(modal) {
             modal.element.modal();
             modal.close.then(function(result) {
-              console.log(result);
-              //result, author, group
+              if (result) {
+                if (result.first === true) {
+                  ResultService.Create({
+                      author: result.author,
+                      group: result.group,
+                      result: result.result,
+                      comments: result.comments
+                    })
+                    .then(function() {
+                      FlashService.Success('Assessment completed!');
+                    })
+                    .catch(function(err) {
+                      console.log(err);
+                    });
+                } else {
+                  ResultService.Update(result)
+                    .then(function() {
+                      FlashService.Success('Assessment saved!');
+                    })
+                    .catch(function(err) {
+                      console.log(err);
+                    });
+                }
+              }
             });
           });
         };
@@ -246,6 +269,7 @@
         $scope.title = title;
         $scope.selected = selected;
         $scope.questions = [];
+        var init = null;
 
         getAllQuestions();
 
@@ -263,7 +287,7 @@
           close(null, 500);
         };
 
-        $scope.toggle = function(item, list) {
+        $scope.toggle = function(item, list, ind) {
           var searchTerm = item.text,
             index = -1;
           for (var i = 0, len = list.length; i < len; i++) {
@@ -272,24 +296,56 @@
               break;
             }
           }
+          var elem = document.querySelector('.questions-list');
+          while (ind > 0 && elem) {
+            elem = elem.nextSibling.nextSibling;
+            ind--;
+          }
           if (index > -1) {
             list.splice(index, 1);
+            if (elem) {
+              elem.classList.remove('chosen');
+            }
           } else {
             list.push(item);
+            if (elem) {
+              elem.classList.add('chosen');
+            }
           }
         };
 
-        $scope.exists = function(item, list) {
+        $scope.exists = function(item, list, ind) {
           var searchTerm = item.text,
-            index = -1;
+            index = -1,
+            elem = document.querySelector('.questions-list');
+          while (ind > 0 && elem) {
+            elem = elem.nextSibling.nextSibling;
+            ind--;
+          }
           for (var i = 0, len = list.length; i < len; i++) {
             if (list[i].text === searchTerm) {
               index = i;
+              if (elem) {
+                elem.classList.add('chosen');
+              }
               break;
             }
           }
           return index > -1;
         };
+
+        $scope.moved = function(index, q) {
+          if ($scope.selected[index].text === init) {
+            $scope.selected.splice(index, 1);
+          } else {
+            $scope.selected.splice(index + 1, 1);
+          }
+          init = null;
+        }
+
+        $scope.start = function(q) {
+          init = q;
+        }
 
         function getAllQuestions() {
           UserService.GetCurrent().then(function(user) {
@@ -298,7 +354,6 @@
             })
           });
         }
-
       }
     ])
     .controller('GroupController', [
@@ -450,37 +505,55 @@
       }
     ])
     .controller('AssessmentController', [
-      '$scope', '$element', 'close', 'user', 'assessment', 'GroupService',
-      function($scope, $element, close, user, assessment, GroupService) {
+      '$scope', '$element', 'close', 'user', 'assessment', 'GroupService', 'ResultService', '$timeout',
+      function($scope, $element, close, user, assessment, GroupService, ResultService, $timeout) {
         $scope.title = assessment.courseName + " " + assessment.name;
         $scope.status = "";
         $scope.locked = false;
         $scope.questions = [];
+        $scope.groupId = null;
         $scope.members = [];
         $scope.results = [];
         $scope.result = {};
-        $scope.slider_toggle = {
-          options: {
-            floor: 0,
-            ceil: 100
-          }
-        };
+        $scope.first = true;
+        $scope.id = null;
+        $scope.comments = [];
 
         GroupService.GetByUser(user, assessment._id)
           .then(function(g) {
             if (g) {
               if (g.locked) {
+                ResultService.GetByUser(user, g._id)
+                  .then(function(r) {
+                    if (r) {
+                      $scope.first = false;
+                      $scope.id = r._id;
+                      $scope.comments = r.comments;
+                      for (var i = 0, len = $scope.members.length; i < len; i++) {
+                        $scope.results[i] = r.result[$scope.members[i]];
+                      }
+                    } else {
+                      $scope.comments = new Array($scope.questions.length);
+                      for (var i = 0, len = $scope.members.length; i < len; i++) {
+                        $scope.results[i] = new Array($scope.questions.length);
+                        for (var j = 0, len2 = $scope.questions.length; j < len2; j++) {
+                          if ($scope.questions[j].type === 'Multiple choice') {
+                            $scope.results[i][j] = [];
+                          }
+                        }
+                      }
+                    }
+                  })
+                  .catch(function(err) {
+                    console.log(err);
+                  });
+                $scope.groupId = g._id;
                 $scope.locked = true;
                 $scope.questions = assessment.questions;
                 $scope.members = g.member;
-                for (var i = 0, len = $scope.members.length; i < len; i++) {
-                  $scope.results[i] = new Array($scope.questions.length);
-                  for (var j = 0, len2 = $scope.questions.length; j < len2; j++) {
-                    if ($scope.questions[j].type === 'Multiple choice') {
-                      $scope.results[i][j] = [];
-                    }
-                  }
-                }
+                setTimeout(function() {
+                  $scope.$broadcast('reCalcViewDimensions');
+                }, 500);
               } else {
                 $scope.status = "Please lock your group!";
               }
@@ -493,10 +566,9 @@
           });
 
         $scope.toggle = function(item, list) {
-          console.log(list);
           var index = -1;
           for (var i = 0, len = list.length; i < len; i++) {
-            if (list[i].text === item) {
+            if (list[i] === item) {
               index = i;
               break;
             }
@@ -508,6 +580,18 @@
           }
         };
 
+        $scope.exists = function(item, list) {
+          if (!list) return false;
+          var index = -1;
+          for (var i = 0, len = list.length; i < len; i++) {
+            if (list[i] === item) {
+              index = i;
+              break;
+            }
+          }
+
+          return index > -1;
+        };
 
         $scope.canSubmit = function() {
           return $scope.locked && finished();
@@ -529,7 +613,12 @@
             $scope.result[$scope.members[i]] = $scope.results[i];
           }
           close({
-            result: $scope.result
+            _id: $scope.id,
+            first: $scope.first,
+            author: user,
+            group: $scope.groupId,
+            result: $scope.result,
+            comments: $scope.comments
           }, 500);
         };
 
@@ -538,6 +627,12 @@
           $element.modal('hide');
 
           close(null, 500);
+        };
+
+        function refreshSlider() {
+          $timeout(function() {
+            $scope.$broadcast('rzSliderForceRender');
+          });
         };
 
       }

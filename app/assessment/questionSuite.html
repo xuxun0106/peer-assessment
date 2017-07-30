@@ -7,14 +7,48 @@
       </div>
       <div class="modal-body">
         <p>Please select questions to form the assessment</p>
-
-        <form class="form-horizontal" role="form">
-          <div class="form-group">
-            <div class="checkbox col-sm-10" ng-repeat="q in questions track by $index">
-              <label><input type="checkbox" ng-checked="exists(q, selected)" ng-click="toggle(q, selected)">{{q.text}}</label>
+        <div class="panel panel-primary questions-list" ng-checked="exists(q, selected, Index)" ng-click="toggle(q, selected, Index)" ng-repeat="q in questions track by $index" ng-init="Index = $index">
+          <div class="panel-heading">
+            <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
+          </div>
+          <div class="panel-body">
+            <div class="element-display form-group">
+              <div class="radio-inline" ng-repeat="level in q.levels" ng-if="q.type=='Single choice'">
+                <label><input type="radio" name="optradio" disabled>{{level}}</label>
+              </div>
+              <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
+                <label><input type="checkbox" disabled>{{option}}</label>
+              </div>
+              <textarea rows="2" ng-if="q.type=='Text'" class="width-control" disabled></textarea>
+              <input type="range" min="0" max="100" step="5" class="width-control" ng-if="q.type=='Slider'" disabled/>
             </div>
           </div>
-        </form>
+        </div>
+        <h4>Selected question</h4>
+        <p>You can drag and drop the questions to change the order</p>
+
+        <ul dnd-list="selected">
+          <li ng-repeat="q in selected track by $index" dnd-draggable="q" dnd-moved="moved($index)" dnd-dragstart="start(q.text)" dnd-effect-allowed="move">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
+              </div>
+              <div class="panel-body">
+                <div class="element-display form-group">
+                  <div class="radio-inline" ng-repeat="level in q.levels" ng-if="q.type=='Single choice'">
+                    <label><input type="radio" name="optradio" disabled>{{level}}</label>
+                  </div>
+                  <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
+                    <label><input type="checkbox" disabled>{{option}}</label>
+                  </div>
+                  <textarea rows="2" ng-if="q.type=='Text'" class="width-control" disabled></textarea>
+                  <input type="range" min="0" max="100" step="5" class="width-control" ng-if="q.type=='Slider'" disabled/>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+
 
       </div>
       <div class="modal-footer">

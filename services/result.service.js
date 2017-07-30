@@ -4,13 +4,12 @@ var mongo = require('mongoskin');
 var db = mongo.db(config.connectionString, {
   native_parser: true
 });
-db.bind('groups');
+db.bind('results');
 
 var service = {};
 
 service.getByUser = getByUser;
 service.create = create;
-service.getByAssessment = getByAssessment;
 service.update = update;
 service.delete = _delete;
 
@@ -18,9 +17,9 @@ module.exports = service;
 
 function getByUser(query) {
   var deferred = Q.defer();
-  db.groups.findOne({
-    assessment : query.assessment,
-    member : query.member
+  db.results.findOne({
+    group : query.group,
+    author : query.member
   }, function(err, g) {
     if (err) {
       deferred.reject(err);
@@ -32,27 +31,27 @@ function getByUser(query) {
   return deferred.promise;
 }
 
-function create(Group) {
+function create(Result) {
 
   var deferred = Q.defer();
 
-  db.groups.findOne({
-    assessment: Group.assessment,
-    member: Group.member[0]
+  db.results.findOne({
+    group : Result.group,
+    author : Result.author
   }, function(err, g) {
     if (err) deferred.reject(err);
 
     if (g) {
-      deferred.reject('You are already in a group!');
+      deferred.reject();
     } else {
-      createGroup();
+      createResult();
     }
   });
 
-  function createGroup() {
+  function createResult() {
 
-    db.groups.insert(
-      Group,
+    db.results.insert(
+      Result,
       function(err, data) {
         if (err) deferred.reject(err);
 
@@ -63,31 +62,14 @@ function create(Group) {
   return deferred.promise;
 }
 
-function getByAssessment(_assessment) {
+function update(_id, Result) {
   var deferred = Q.defer();
 
-  db.groups.find({
-    assessment: _assessment
-  }).toArray(function(err, data) {
-    if (err) {
-      deferred.reject(err);
-    } else {
-      deferred.resolve(data);
-    }
-  });
-
-  return deferred.promise;
-}
-
-function update(_id, Group) {
-  var deferred = Q.defer();
-
-  db.groups.update({
+  db.results.update({
       _id: mongo.helper.toObjectID(_id)
     },{
       $set : {
-        member : Group.member,
-        locked : Group.locked
+        result : Result.result
       }
     },
     function(err, data) {
@@ -103,7 +85,7 @@ function update(_id, Group) {
 function _delete(id) {
   var deferred = Q.defer();
 
-  db.groups.remove({
+  db.results.remove({
       _id: mongo.helper.toObjectID(id)
     },
     function(err) {

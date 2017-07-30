@@ -6,7 +6,7 @@
 <!-- edit copy delete -->
 
 
-<div class="display ongoing-for-student" ng-show="assessmentCtrl.usertype==='student'">
+<div class="display ongoing-for-student well" ng-show="assessmentCtrl.usertype==='student'">
   <h2>Ongoing Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.studentOngoing track by $index">
     <div class="panel-heading">
@@ -26,7 +26,7 @@
 </div>
 
 
-<div class="display past-for-student" ng-show="assessmentCtrl.usertype==='student'">
+<div class="display past-for-student well" ng-show="assessmentCtrl.usertype==='student'">
   <h2>Past Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.studentPast track by $index">
     <div class="panel-heading">
@@ -43,7 +43,7 @@
 </div>
 
 <!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
-<div class="display ongoing-for-instructor" ng-show="assessmentCtrl.usertype==='instructor'">
+<div class="display ongoing-for-instructor well" ng-show="assessmentCtrl.usertype==='instructor'">
   <h2>Ongoing Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorOngoing track by $index">
     <div class="panel-heading">
@@ -57,7 +57,7 @@
 </div>
 
 <!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
-<div class="display upcoming-for-instructor" ng-show="assessmentCtrl.usertype==='instructor'">
+<div class="display upcoming-for-instructor well" ng-show="assessmentCtrl.usertype==='instructor'">
   <h2>Upcomimg Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorUpcoming track by $index">
     <div class="panel-heading">
@@ -71,7 +71,7 @@
 </div>
 
 <!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
-<div class="display past-for-instructor" ng-show="assessmentCtrl.usertype==='instructor'">
+<div class="display past-for-instructor well" ng-show="assessmentCtrl.usertype==='instructor'">
   <h2>Past Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorPast track by $index">
     <div class="panel-heading">

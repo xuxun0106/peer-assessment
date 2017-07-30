@@ -30,9 +30,9 @@ function getAllCourses(req, res) {
     });
     response.on('end', function() {
       allcourses = JSON.parse(body);
+      res.send(allcourses);
     });
   });
-  res.send(allcourses);
 }
 
 

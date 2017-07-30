@@ -1,9 +1,9 @@
-﻿body {
-    padding: 20px 0;
+body {
+  padding: 20px 0;
 }
 
 .flash-message {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .question-creator {
@@ -20,4 +20,39 @@
 
 .make-inline {
   display: inline-block;
+}
+
+.chosen {
+  border: 5px solid #90caf9 !important;
+}
+
+.remove-border {
+  border: none;
+}
+
+
+ul[dnd-list] {
+  min-height: 42px;
+  padding-left: 0px;
+}
+
+
+ul[dnd-list] .dndDraggingSource {
+  display: none;
+}
+
+ul[dnd-list] .dndPlaceholder {
+  background-color: #ddd;
+  display: block;
+  min-height: 120px;
+}
+
+ul[dnd-list] li {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
 }
