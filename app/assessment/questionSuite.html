@@ -7,7 +7,7 @@
       </div>
       <div class="modal-body">
         <p>Please select questions to form the assessment</p>
-        <div class="panel panel-primary questions-list" ng-checked="exists(q, selected, Index)" ng-click="toggle(q, selected, Index)" ng-repeat="q in questions track by $index" ng-init="Index = $index">
+        <div class="panel panel-primary" ng-checked="exists(q, selected)" ng-click="toggle(q, selected)" ng-repeat="q in questions track by $index" ng-class="{'chosen' : exists(q, selected)}">
           <div class="panel-heading">
             <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
           </div>

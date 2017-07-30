@@ -296,38 +296,20 @@
               break;
             }
           }
-          var elem = document.querySelector('.questions-list');
-          while (ind > 0 && elem) {
-            elem = elem.nextSibling.nextSibling;
-            ind--;
-          }
+
           if (index > -1) {
             list.splice(index, 1);
-            if (elem) {
-              elem.classList.remove('chosen');
-            }
           } else {
             list.push(item);
-            if (elem) {
-              elem.classList.add('chosen');
-            }
           }
         };
 
         $scope.exists = function(item, list, ind) {
           var searchTerm = item.text,
-            index = -1,
-            elem = document.querySelector('.questions-list');
-          while (ind > 0 && elem) {
-            elem = elem.nextSibling.nextSibling;
-            ind--;
-          }
+            index = -1;
           for (var i = 0, len = list.length; i < len; i++) {
             if (list[i].text === searchTerm) {
               index = i;
-              if (elem) {
-                elem.classList.add('chosen');
-              }
               break;
             }
           }
