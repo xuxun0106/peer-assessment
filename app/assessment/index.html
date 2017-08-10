@@ -26,7 +26,7 @@
 </div>
 
 
-<div class="display past-for-student well" ng-show="assessmentCtrl.usertype==='student'">
+<!-- <div class="display past-for-student well" ng-show="assessmentCtrl.usertype==='student'">
   <h2>Past Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.studentPast track by $index">
     <div class="panel-heading">
@@ -35,14 +35,10 @@
     <div class="panel-body">
       <b>From: </b>{{a.startDate}}
       <b>To: </b>{{a.endDate}}
-      <button type="button" class="btn btn-default btn-sm pull-right" ng-click="">
-              <span class="glyphicon glyphicon-eye-open"></span>
-      </button>
     </div>
   </div>
-</div>
+</div> -->
 
-<!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
 <div class="display ongoing-for-instructor well" ng-show="assessmentCtrl.usertype==='instructor'">
   <h2>Ongoing Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorOngoing track by $index">
@@ -52,11 +48,16 @@
     <div class="panel-body">
       <b>From: </b>{{a.startDate}}
       <b>To: </b>{{a.endDate}}
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.copyAssessment(a)">
+              <span class="glyphicon glyphicon-retweet"></span>
+      </button>
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.viewAssessment(a)">
+              <span class="glyphicon glyphicon-eye-open"></span>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
 <div class="display upcoming-for-instructor well" ng-show="assessmentCtrl.usertype==='instructor'">
   <h2>Upcomimg Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorUpcoming track by $index">
@@ -66,11 +67,22 @@
     <div class="panel-body">
       <b>From: </b>{{a.startDate}}
       <b>To: </b>{{a.endDate}}
+      <button type="button" class="btn btn-default pull-right form-group" ng-click="assessmentCtrl.deleteAssessment(a)">
+              <span class="glyphicon glyphicon-trash"></span>
+      </button>
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.copyAssessment(a)">
+              <span class="glyphicon glyphicon-retweet"></span>
+      </button>
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.editAssessment(a)">
+              <span class="glyphicon glyphicon-pencil"></span>
+      </button>
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.viewAssessment(a)">
+              <span class="glyphicon glyphicon-eye-open"></span>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- ng-show="assessmentCtrl.usertype==='instructor'" -->
 <div class="display past-for-instructor well" ng-show="assessmentCtrl.usertype==='instructor'">
   <h2>Past Assessment</h2>
   <div class="panel panel-primary" ng-repeat="a in assessmentCtrl.instructorPast track by $index">
@@ -80,6 +92,15 @@
     <div class="panel-body">
       <b>From: </b>{{a.startDate}}
       <b>To: </b>{{a.endDate}}
+      <button type="button" class="btn btn-default pull-right form-group" ng-click="assessmentCtrl.deleteAssessment(a)">
+              <span class="glyphicon glyphicon-trash"></span>
+      </button>
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.copyAssessment(a)">
+              <span class="glyphicon glyphicon-retweet"></span>
+      </button>
+      <button type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.viewAssessment(a)">
+              <span class="glyphicon glyphicon-eye-open"></span>
+      </button>
     </div>
   </div>
 </div>

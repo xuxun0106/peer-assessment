@@ -1,0 +1,16 @@
+<h1>Results</h1>
+
+<div class="display">
+  <div class="panel panel-primary" ng-repeat="a in assessments track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
+    </div>
+    <div class="panel-body">
+      <b>From: </b>{{a.startDate}}
+      <b>To: </b>{{a.endDate}}
+      <button type="button" class="btn btn-default pull-right" ng-click="resultByAssessment(a._id)">
+              <span class="glyphicon glyphicon-eye-open"></span>
+      </button>
+    </div>
+  </div>
+</div>

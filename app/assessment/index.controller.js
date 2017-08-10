@@ -5,8 +5,8 @@
   angular
     .module('app')
     .controller('Assessment.IndexController', ['AssessmentService', 'FlashService',
-      'UserService', 'ModalService', '$scope', 'ResultService',
-      function(AssessmentService, FlashService, UserService, ModalService, $scope, ResultService) {
+      'UserService', 'ModalService', '$scope', 'ResultService', 'GroupService',
+      function(AssessmentService, FlashService, UserService, ModalService, $scope, ResultService, GroupService) {
         var vm = this;
 
         vm.user = null;
@@ -106,31 +106,130 @@
         };
 
         vm.show = function() {
+          newAssessment({
+            title: "Create a new assessment",
+            author: vm.user,
+            courseCode: null,
+            courseName: null,
+            questions: [],
+            name: null,
+            startDate: null,
+            endDate: null,
+            id: null
+          });
+        };
+
+        vm.viewAssessment = function(a) {
+          ModalService.showModal({
+            templateUrl: "assessment/viewAssessment.html",
+            controller: "ViewController",
+            preClose: (modal) => {
+              modal.element.modal('hide');
+            },
+            inputs: {
+              assessment: a
+            }
+          }).then(function(modal) {
+            modal.element.modal();
+          });
+        };
+
+        vm.copyAssessment = function(a) {
+          newAssessment({
+            title: "Create a new assessment",
+            author: vm.user,
+            courseCode: a.courseCode,
+            courseName: a.courseName,
+            questions: a.questions,
+            name: null,
+            startDate: null,
+            endDate: null,
+            id: null
+          });
+        };
+
+        vm.editAssessment = function(a) {
+          newAssessment({
+            title: "Create a new assessment",
+            author: vm.user,
+            courseCode: a.courseCode,
+            courseName: a.courseName,
+            questions: a.questions,
+            name: a.name,
+            startDate: a.startDate,
+            endDate: a.endDate,
+            id: a._id
+          });
+        }
+
+        vm.deleteAssessment = function(a) {
+          if (confirm("Are you sure?")) {
+            AssessmentService.Delete(a._id)
+              .then(function() {
+                GroupService.GetByAssessment(a._id).then(function(groups) {
+                    groups.forEach(function(group) {
+                      ResultService.GetByGroup(group).then(function(results) {
+                          results.forEach(function(result) {
+                            ResultService.Delete(result._id)
+                              .catch(function(error) {
+                                FlashService.Error(error);
+                              });
+                          })
+                        })
+                        .catch(function(error) {
+                          FlashService.Error(error);
+                        });
+                      GroupService.Delete(group._id)
+                        .catch(function(error) {
+                          FlashService.Error(error);
+                        });
+                    })
+                  })
+                  .catch(function(error) {
+                    FlashService.Error(error);
+                  });
+                FlashService.Success('Assessment saved!');
+                instructorGet();
+              })
+              .catch(function(error) {
+                FlashService.Error(error);
+              });
+          }
+        };
+
+        function newAssessment(option) {
           ModalService.showModal({
             templateUrl: "assessment/newAssessment.html",
             controller: "NewController",
             preClose: (modal) => {
               modal.element.modal('hide');
             },
-            inputs: {
-              title: "Create a new assessment",
-              author: vm.user
-            }
+            inputs: option
           }).then(function(modal) {
             modal.element.modal();
             modal.close.then(function(result) {
               if (result) {
-                AssessmentService.Create(result).then(function() {
-                    FlashService.Success('Assessment saved!');
-                    instructorGet();
-                  })
-                  .catch(function(error) {
-                    FlashService.Error(error);
-                  });
+                if (result._id) {
+                  AssessmentService.Update(result).then(function() {
+                      FlashService.Success('Assessment updated!');
+                      instructorGet();
+                    })
+                    .catch(function(error) {
+                      FlashService.Error(error);
+                    });
+                } else {
+                  AssessmentService.Create(result).then(function() {
+                      FlashService.Success('Assessment saved!');
+                      instructorGet();
+                    })
+                    .catch(function(error) {
+                      FlashService.Error(error);
+                    });
+                }
               }
             });
           });
-        };
+        }
 
         function instructorGet() {
           AssessmentService.GetByAuthor(vm.user).then(function(a) {
@@ -153,15 +252,26 @@
     ])
     .controller('NewController', [
       '$scope', '$element', 'title', 'close', 'author', 'ModalService', 'UserService',
-      function($scope, $element, title, close, author, ModalService, UserService) {
+      'courseCode', 'courseName', 'questions', 'name', 'startDate', 'endDate', 'id',
+      function($scope, $element, title, close, author, ModalService, UserService,
+        courseCode, courseName, questions, name, startDate, endDate, id) {
+        if (startDate) {
+          $scope.dateRangeStart = moment(startDate).subtract(moment(startDate).utcOffset() / 60, 'hours');
+        } else {
+          $scope.dateRangeStart = null;
+        }
+
+        if (endDate) {
+          $scope.dateRangeEnd = moment(endDate).subtract(moment(endDate).utcOffset() / 60, 'hours');
+        } else {
+          $scope.dateRangeEnd = null;
+        }
 
         $scope.courses = null;
-        $scope.courseCode = null;
-        $scope.courseName = null;
-        $scope.name = null;
-        $scope.dateRangeStart = null;
-        $scope.dateRangeEnd = null;
-        $scope.questions = [];
+        $scope.courseCode = courseCode;
+        $scope.courseName = courseName;
+        $scope.name = name;
+        $scope.questions = questions;
         $scope.author = author;
         $scope.title = title;
 
@@ -178,15 +288,28 @@
         }
 
         $scope.close = function() {
-          close({
-            courseCode: $scope.courseCode,
-            courseName: $scope.courseName,
-            name: $scope.name,
-            startDate: moment($scope.dateRangeStart).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
-            endDate: moment($scope.dateRangeEnd).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
-            questions: $scope.questions,
-            author: $scope.author
-          }, 500);
+          if (id) {
+            close({
+              courseCode: $scope.courseCode,
+              courseName: $scope.courseName,
+              name: $scope.name,
+              startDate: moment($scope.dateRangeStart).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
+              endDate: moment($scope.dateRangeEnd).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
+              questions: $scope.questions,
+              author: $scope.author,
+              _id: id
+            }, 500);
+          } else {
+            close({
+              courseCode: $scope.courseCode,
+              courseName: $scope.courseName,
+              name: $scope.name,
+              startDate: moment($scope.dateRangeStart).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
+              endDate: moment($scope.dateRangeEnd).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
+              questions: $scope.questions,
+              author: $scope.author
+            }, 500);
+          }
         };
 
 
@@ -615,6 +738,23 @@
           $timeout(function() {
             $scope.$broadcast('rzSliderForceRender');
           });
+        };
+
+      }
+    ])
+    .controller('ViewController', [
+      '$scope', '$element', 'assessment', 'close',
+      function($scope, $element, assessment, close) {
+
+        $scope.title = assessment.courseCode + " " + assessment.courseName + " " + assessment.name;
+        $scope.questions = assessment.questions;
+
+
+        $scope.cancel = function() {
+
+          $element.modal('hide');
+
+          close(null, 500);
         };
 
       }

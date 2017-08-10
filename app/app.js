@@ -48,6 +48,25 @@
                   activeTab: 'question',
                   permissions: ['instructor']
                 }
+            })
+            .state('results', {
+                url: '/results',
+                templateUrl: 'result/index.html',
+                controller: 'Result.IndexController',
+                controllerAs: 'resultCtrl',
+                data: {
+                  activeTab: 'results',
+                  permissions: ['instructor']
+                }
+            })
+            .state('resultByAssessment', {
+                url: '/result/:assessmentId',
+                templateUrl: 'result/resultsByAssessment.html',
+                controller: 'ResultByAssessmentController',
+                data: {
+                  activeTab: 'results',
+                  permissions: ['instructor']
+                }
             });
     }
 

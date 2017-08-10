@@ -8,6 +8,7 @@
     function Service($http, $q) {
         var service = {};
 
+        service.GetByGroup = GetByGroup;
         service.GetByUser = GetByUser;
         service.Create = Create;
         service.Update = Update;
@@ -15,6 +16,10 @@
 
         return service;
 
+
+        function GetByGroup(_group) {
+          return $http.get('/api/results?group=' + _group).then(handleSuccess, handleError);
+        }
 
         function GetByUser(_user,_group) {
           return $http.get('/api/results?member=' + _user + '&group=' + _group).then(handleSuccess, handleError);

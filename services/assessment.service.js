@@ -11,6 +11,7 @@ var service = {};
 service.create = create;
 service.getByAuthor = getByAuthor;
 service.getByCourse = getByCourse;
+service.getById = getById;
 service.update = update;
 service.delete = _delete;
 
@@ -35,55 +36,75 @@ function create(Param) {
   return deferred.promise;
 }
 
-function getByCourse(_code) {
-    var deferred = Q.defer();
-    
-    db.assessments.find({
-      courseCode : _code
-    }).toArray(function(err, data) {
-      if (err) {
-        deferred.reject(err);
-      } else {
-        deferred.resolve(data);
-      }
-    });
+function getById(_id) {
+  var deferred = Q.defer();
+  db.assessments.findById(_id, function(err, assessment) {
+    if (err) deferred.reject(err);
 
-    return deferred.promise;
+    if (assessment) {
+      deferred.resolve(assessment);
+    } else {
+      deferred.resolve();
+    }
+  });
+
+  return deferred.promise;
+}
+
+function getByCourse(_code) {
+  var deferred = Q.defer();
+
+  db.assessments.find({
+    courseCode: _code
+  }).toArray(function(err, data) {
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(data);
+    }
+  });
+
+  return deferred.promise;
 }
 
 function getByAuthor(_author) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    db.assessments.find({
-      author : _author
-    }).toArray(function(err, data) {
-      if (err) {
-        deferred.reject(err);
-      } else {
-        deferred.resolve(data);
-      }
-    });
+  db.assessments.find({
+    author: _author
+  }).toArray(function(err, data) {
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(data);
+    }
+  });
 
-    return deferred.promise;
+  return deferred.promise;
 }
 
 function update(_id, newAssessment) {
   var deferred = Q.defer();
 
-  updateAssessment();
-
-  function updateAssessment() {
-    db.assessments.update({
-        _id: mongo.helper.toObjectID(_id)
-      }, {
-        $set: newAssessment
-      },
-      function(err, data) {
-        if (err) deferred.reject(err);
-
+  db.assessments.update({
+      _id: mongo.helper.toObjectID(_id)
+    }, {
+      $set: {
+        courseCode: newAssessment.courseCode,
+        courseName: newAssessment.courseName,
+        name: newAssessment.name,
+        startDate: newAssessment.startDate,
+        endDate: newAssessment.endDate,
+        questions: newAssessment.questions
+      }
+    },
+    function(err, data) {
+      if (err) deferred.reject(err);
+      else {
         deferred.resolve();
-      });
-  }
+      }
+    });
+
 
   return deferred.promise;
 }

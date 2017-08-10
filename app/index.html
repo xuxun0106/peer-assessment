@@ -17,6 +17,7 @@
     <ul class="nav nav-tabs">
       <li ng-class="{active: activeTab === 'assessment'}"><a ui-sref="assessment">Assesements</a></li>
       <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'question'}"><a ui-sref="question">Questions</a></li>
+      <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'results'}"><a ui-sref="results">Results</a></li>
       <li><a href="/login" target="_self">Logout</a></li>
     </ul>
     <div class="flash-message" ng-if="flash">
@@ -53,6 +54,7 @@
   <script src="app-services/group.service.js"></script>
   <script src="assessment/index.controller.js"></script>
   <script src="question/index.controller.js"></script>
+  <script src="result/index.controller.js"></script>
 </body>
 
 </html>

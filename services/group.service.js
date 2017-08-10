@@ -11,6 +11,7 @@ var service = {};
 service.getByUser = getByUser;
 service.create = create;
 service.getByAssessment = getByAssessment;
+service.getById = getById;
 service.update = update;
 service.delete = _delete;
 
@@ -29,6 +30,20 @@ function getByUser(query) {
     }
   });
 
+  return deferred.promise;
+}
+
+function getById(id) {
+  var deferred = Q.defer();
+  db.groups.findById(id, function(err, group) {
+    if (err) deferred.reject(err);
+
+    if (group) {
+      deferred.resolve(group);
+    } else {
+      deferred.reject();
+    }
+  })
   return deferred.promise;
 }
 

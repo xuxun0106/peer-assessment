@@ -30,6 +30,14 @@ body {
   border: none;
 }
 
+.table td, .table th {
+   text-align: center;
+}
+
+.red {
+  color: red;
+}
+
 
 ul[dnd-list] {
   min-height: 42px;

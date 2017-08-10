@@ -8,6 +8,7 @@
   function Controller(QuestionService, UserService, $templateRequest, $compile, $scope, $document, FlashService) {
 
     var vm = this;
+    vm.searchText = "";
 
     vm.emptyQuestion = function() {
       vm.newq = {
@@ -96,14 +97,14 @@
 
     vm.deleteQuestion = function(q) {
       QuestionService.Delete(q._id).then(function() {
-        FlashService.Success('Question deleted!')
-        QuestionService.GetByAuthor(vm.newq.author).then(function(qs) {
-          vm.questions = qs;
+          FlashService.Success('Question deleted!')
+          QuestionService.GetByAuthor(vm.newq.author).then(function(qs) {
+            vm.questions = qs;
+          });
+        })
+        .catch(function(error) {
+          FlashService.Error(error);
         });
-      })
-      .catch(function(error) {
-        FlashService.Error(error);
-      });
     };
 
     // vm.editQuestion = function(q, index){

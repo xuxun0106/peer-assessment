@@ -19,7 +19,7 @@
 
 
         function GetById(_id) {
-            return $http.get('/api/assessments/' + _id).then(handleSuccess, handleError);
+            return $http.get('/api/assessments?id=' + _id).then(handleSuccess, handleError);
         }
 
         function GetByAuthor(_username) {
@@ -34,8 +34,8 @@
             return $http.post('/api/assessments', assessment).then(handleSuccess, handleError);
         }
 
-        function Update(question) {
-            return $http.put('/api/assessments/' + question._id, assessment).then(handleSuccess, handleError);
+        function Update(assessment) {
+            return $http.put('/api/assessments/' + assessment._id, assessment).then(handleSuccess, handleError);
         }
 
         function Delete(_id) {

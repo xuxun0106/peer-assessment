@@ -25,21 +25,26 @@
     </div>
   </form>
 </div>
+
 <div class="display">
-  <div class="panel panel-primary" ng-repeat="q in questionCtrl.questions track by $index">
+  <label for="search">Search:  <input ng-model="questionCtrl.searchText" type="text"></label>
+</div>
+
+<div class="display">
+  <div class="panel panel-primary" ng-repeat="q in questionCtrl.questions| filter:questionCtrl.searchText">
     <div class="panel-heading">
       <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
     </div>
     <div class="panel-body">
       <div class="element-display form-group">
         <div class="radio-inline" ng-repeat="level in q.levels" ng-if="q.type=='Single choice'">
-          <label><input type="radio" name="optradio" disabled>{{level}}</label>
+          <label><input type="radio" name="optradio">{{level}}</label>
         </div>
         <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
-          <label><input type="checkbox" disabled>{{option}}</label>
+          <label><input type="checkbox">{{option}}</label>
         </div>
-        <textarea rows="2" ng-if="q.type=='Text'" class="width-control" disabled></textarea>
-        <input type="range" min="0" max="100" step="5" class="width-control" ng-if="q.type=='Slider'" disabled/>
+        <textarea rows="2" ng-if="q.type=='Text'" class="width-control"></textarea>
+        <rzslider ng-if="q.type=='Slider'" class="width-control" rz-slider-options="{floor: 0, ceil: 100, step: 10}"></rzslider>
       </div>
       <button type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.deleteQuestion(q)">
               <span class="glyphicon glyphicon-trash"></span>
@@ -50,8 +55,6 @@
     </div>
   </div>
 </div>
-
-
 
 
 

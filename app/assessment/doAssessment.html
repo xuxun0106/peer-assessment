@@ -16,15 +16,15 @@
               <div ng-repeat="m in members track by $index" ng-init="memberIndex = $index">
                 <h4>{{m}}</h4>
                 <div class="radio-inline" ng-repeat="level in q.levels" ng-if="q.type=='Single choice'">
-                  <label><input type="radio" name="{{m}}" ng-model="results[memberIndex][questionIndex]" value="{{$index}}">{{level}}</label>
+                  <label><input type="radio" name="{{m+questionIndex}}" ng-model="results[memberIndex][questionIndex]" value="{{$index}}">{{level}}</label>
                 </div>
                 <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
-                  <label><input type="checkbox" name="{{m}}" ng-checked="exists(option, results[memberIndex][questionIndex])" ng-click="toggle(option, results[memberIndex][questionIndex])">{{option}}</label>
+                  <label><input type="checkbox" name="{{m+questionIndex}}" ng-checked="exists(option, results[memberIndex][questionIndex])" ng-click="toggle(option, results[memberIndex][questionIndex])">{{option}}</label>
                 </div>
-                <textarea rows="3" ng-if="q.type=='Text'" name="{{m}}" ng-model="results[memberIndex][questionIndex]"></textarea>
+                <textarea rows="3" ng-if="q.type=='Text'" name="{{m+questionIndex}}" ng-model="results[memberIndex][questionIndex]"></textarea>
                 <rzslider ng-if="q.type=='Slider'" rz-slider-model="results[memberIndex][questionIndex]" rz-slider-options="{floor: 0, ceil: 100, step: 10}"></rzslider>
               </div>
-              <textarea placeholder="Leave your comment here" rows="3" class="form-control display" ng-if="q.type!='Text'" name="{{m}}" ng-model="comments[questionIndex]"></textarea>
+              <textarea placeholder="Leave your comment here" rows="3" class="form-control display" ng-if="q.type!='Text'" name="{{m+questionIndex}}" ng-model="comments[questionIndex]"></textarea>
             </div>
           </div>
         </form>

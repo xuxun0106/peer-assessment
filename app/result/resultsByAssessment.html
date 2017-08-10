@@ -1,0 +1,16 @@
+<h1>{{assessment.courseName}}</h1>
+
+<div class="display">
+  <div class="panel panel-info" ng-repeat="group in groups track by $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{group.name}}</h3>
+    </div>
+    <div class="panel-body">
+      {{groupMembers[$index]}}
+      <button type="button" class="btn btn-default pull-right" ng-click="show(group._id)">Feedback</button>
+    </div>
+  </div>
+</div>
+<button type="button" class="btn btn-default" ng-click="setWeightings()">Set up weightings</button>
+<button type="button" class="btn btn-default">Upload Group Grades</button>
+<button type="button" class="btn btn-default">Download Modified Grades</button>

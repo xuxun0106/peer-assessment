@@ -8,6 +8,7 @@ db.bind('results');
 
 var service = {};
 
+service.getResult = getResult;
 service.getByUser = getByUser;
 service.create = create;
 service.update = update;
@@ -31,13 +32,29 @@ function getByUser(query) {
   return deferred.promise;
 }
 
+function getResult(id) {
+  var deferred = Q.defer();
+
+  db.results.find({
+    group: id
+  }).toArray(function(err, data) {
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(data);
+    }
+  });
+
+  return deferred.promise;
+}
+
 function create(Result) {
 
   var deferred = Q.defer();
 
   db.results.findOne({
-    group : Result.group,
-    author : Result.author
+    group: Result.group,
+    author: Result.author
   }, function(err, g) {
     if (err) deferred.reject(err);
 
@@ -67,15 +84,15 @@ function update(_id, Result) {
 
   db.results.update({
       _id: mongo.helper.toObjectID(_id)
-    },{
-      $set : {
-        result : Result.result
+    }, {
+      $set: {
+        result: Result.result
       }
     },
     function(err, data) {
       if (err) deferred.reject(err);
       else
-      deferred.resolve();
+        deferred.resolve();
     });
 
 

@@ -14,50 +14,61 @@ module.exports = router;
 
 function createAssessment(req, res) {
   assessmentService.create(req.body)
-      .then(function() {
-        res.sendStatus(201);
-      })
-      .catch(function() {
-        res.sendStatus(400).send(err);
-      });
+    .then(function() {
+      res.sendStatus(201);
+    })
+    .catch(function() {
+      res.sendStatus(400).send(err);
+    });
 }
 
 function getByCourse(req, res) {
-  assessmentService.getByCourse(req.query.code)
+  if (req.query.code) {
+    assessmentService.getByCourse(req.query.code)
       .then(function(data) {
         res.send(data);
       })
       .catch(function(err) {
         res.sendStatus(400).send(err);
+      });
+  } else if (req.query.id) {
+    assessmentService.getById(req.query.id)
+      .then(function(data) {
+        res.send(data);
       })
+      .catch(function(err) {
+        res.sendStatus(400).send(err);
+      });
+  }
+
 }
 
 function getByAuthor(req, res) {
   assessmentService.getByAuthor(req.params.username)
-      .then(function(data) {
-        res.send(data);
-      })
-      .catch(function(err) {
-        res.sendStatus(400).send(err);
-      })
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(err) {
+      res.sendStatus(400).send(err);
+    })
 }
 
 function updateAssessment(req, res) {
-  assessmentService.update(req.params.id, req.body)
-        .then(function () {
-            res.sendStatus(200);
-        })
-        .catch(function (err) {
-            res.status(400).send(err);
-        });
+  assessmentService.update(req.params._id, req.body)
+    .then(function() {
+      res.sendStatus(200);
+    })
+    .catch(function(err) {
+      res.status(400).send(err);
+    });
 }
 
 function deleteAssessment(req, res) {
-   assessmentService.delete(req.params._id)
-        .then(function () {
-            res.sendStatus(200);
-        })
-        .catch(function (err) {
-            res.status(400).send(err);
-        });
+  assessmentService.delete(req.params._id)
+    .then(function() {
+      res.sendStatus(200);
+    })
+    .catch(function(err) {
+      res.status(400).send(err);
+    });
 }
