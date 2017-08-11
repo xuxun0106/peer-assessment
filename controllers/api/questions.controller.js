@@ -16,7 +16,7 @@ function createQuestion(req, res) {
         res.sendStatus(201);
       })
       .catch(function() {
-        res.sendStatus(400).send(err);
+        res.status(400).send(err);
       });
 }
 
@@ -26,7 +26,7 @@ function getByAuthor(req, res) {
         res.send(data);
       })
       .catch(function(err) {
-        res.sendStatus(400).send(err);
+        res.status(400).send(err);
       })
 }
 

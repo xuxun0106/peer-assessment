@@ -23,8 +23,8 @@ function getByUser(req, res) {
 
 function createGroup(req, res) {
   groupService.create(req.body)
-    .then(function() {
-      res.sendStatus(201);
+    .then(function(data) {
+      res.status(201).send(data);
     })
     .catch(function(err) {
       res.status(400).send(err);

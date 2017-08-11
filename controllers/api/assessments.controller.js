@@ -14,11 +14,11 @@ module.exports = router;
 
 function createAssessment(req, res) {
   assessmentService.create(req.body)
-    .then(function() {
-      res.sendStatus(201);
+    .then(function(data) {
+      res.status(201).send(data);
     })
     .catch(function() {
-      res.sendStatus(400).send(err);
+      res.status(400).send(err);
     });
 }
 
@@ -29,7 +29,7 @@ function getByCourse(req, res) {
         res.send(data);
       })
       .catch(function(err) {
-        res.sendStatus(400).send(err);
+        res.status(400).send(err);
       });
   } else if (req.query.id) {
     assessmentService.getById(req.query.id)
@@ -37,7 +37,7 @@ function getByCourse(req, res) {
         res.send(data);
       })
       .catch(function(err) {
-        res.sendStatus(400).send(err);
+        res.status(400).send(err);
       });
   }
 
@@ -49,7 +49,7 @@ function getByAuthor(req, res) {
       res.send(data);
     })
     .catch(function(err) {
-      res.sendStatus(400).send(err);
+      res.status(400).send(err);
     })
 }
 

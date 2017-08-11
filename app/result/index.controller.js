@@ -3,8 +3,8 @@
 
   angular
     .module('app')
-    .controller('Result.IndexController', ['UserService', 'AssessmentService', '$scope', '$state',
-      function(UserService, AssessmentService, $scope, $state) {
+    .controller('Result.IndexController', ['UserService', 'AssessmentService', '$scope', '$state', 'FlashService',
+      function(UserService, AssessmentService, $scope, $state, FlashService) {
         $scope.assessments = [];
 
         UserService.GetCurrent()
@@ -19,11 +19,11 @@
                 }
               })
               .catch(function(err) {
-                console.log(err);
+                FlashService.Error(err);
               });
           })
           .catch(function(err) {
-            console.log(err);
+            FlashService.Error(err);
           });
 
         $scope.resultByAssessment = function(id) {
@@ -34,8 +34,8 @@
       }
     ])
     .controller('ResultByAssessmentController', ['$scope', '$stateParams',
-      'GroupService', 'AssessmentService', 'ModalService',
-      function($scope, $stateParams, GroupService, AssessmentService, ModalService) {
+      'GroupService', 'AssessmentService', 'ModalService', 'FlashService',
+      function($scope, $stateParams, GroupService, AssessmentService, ModalService, FlashService) {
 
         $scope.assessment = null;
         $scope.groups = [];
@@ -70,7 +70,7 @@
             }
           })
           .catch(function(err) {
-            console.log(err);
+            FlashService.Error(err);
           })
 
         $scope.show = function(groupId) {
@@ -119,8 +119,8 @@
       }
     ])
     .controller('FeedbackController', [
-      '$scope', '$element', 'group', 'close', 'assessment', 'ResultService', 'weightings',
-      function($scope, $element, group, close, assessment, ResultService, weightings) {
+      '$scope', '$element', 'group', 'close', 'assessment', 'ResultService', 'weightings', 'FlashService',
+      function($scope, $element, group, close, assessment, ResultService, weightings, FlashService) {
 
         $scope.groupMembers = [];
         $scope.noComplete = "None";
@@ -162,7 +162,7 @@
             }
           })
           .catch(function(err) {
-            console.log(err);
+            FlashService.Error(err);
           })
 
         $scope.flag = function(sapa) {

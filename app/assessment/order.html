@@ -1,0 +1,39 @@
+<div class="modal fade">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">{{title}}</h4>
+      </div>
+      <div class="modal-body">
+
+        <ul dnd-list="selected">
+          <li ng-repeat="q in selected track by $index" dnd-draggable="q" dnd-moved="moved($index)" dnd-dragstart="start(q.text)" dnd-effect-allowed="move">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">{{q.text}}<span class="label label-info pull-right">{{q.type}}</span></h3>
+              </div>
+              <div class="panel-body">
+                <div class="element-display form-group">
+                  <div class="radio-inline" ng-repeat="level in q.levels" ng-if="q.type=='Single choice'">
+                    <label><input type="radio" name="optradio" disabled>{{level}}</label>
+                  </div>
+                  <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
+                    <label><input type="checkbox" disabled>{{option}}</label>
+                  </div>
+                  <textarea rows="2" ng-if="q.type=='Text'" class="width-control" disabled></textarea>
+                  <input type="range" min="0" max="100" step="5" class="width-control" ng-if="q.type=='Slider'" disabled/>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
+        <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

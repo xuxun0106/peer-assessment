@@ -8,25 +8,26 @@
       <div class="modal-body">
         <form class="form-horizontal" role="form">
           <div class="dropdown form-group">
-            <button type="button" class="btn btn-default dropdown-toggle col-sm-2 remove-border" id="dropdownMenu2" data-toggle="dropdown">{{courseCode || "Course Code"}}
+            <button ng-hide="on()" type="button" class="btn btn-default dropdown-toggle col-sm-2 remove-border" id="dropdownMenu2" data-toggle="dropdown">{{courseCode || "Course Code"}}
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-              <li role="presentation" ng-repeat="c in courses">
+              <li><input ng-model="searchText" type="text" placeholder="Search"></li>
+              <li role="presentation" ng-repeat="c in courses | filter:searchText">
                 <a role="menuitem" ng-click="setCourse(c)">{{c.code}}</a>
               </li>
             </ul>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="name" placeholder="Name of Course" ng-model="courseName" disabled>
+              <input type="text" ng-hide="on()" class="form-control" id="name" placeholder="Name of Course" ng-model="courseName" disabled>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-hide="on()" >
             <label for="name" class="col-sm-2 control-label">Name</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="name" placeholder="Name of assessment" ng-model="name">
             </div>
           </div>
-          <div class="dropdown form-group dropdown-start-parent">
+          <div ng-hide="on()" class="dropdown form-group dropdown-start-parent">
             <label for="startDate" class="col-sm-2 control-label">Start Date</label>
             <a class="dropdown-toggle col-sm-10" id="dropdownStart" role="button" data-toggle="dropdown" data-target=".dropdown-start-parent" href="#">
               <div class="input-group date">
@@ -50,10 +51,16 @@
               <datetimepicker data-ng-model="dateRangeEnd" data-datetimepicker-config="{ dropdownSelector: '#dropdownEnd', renderOn: 'start-date-changed' }" data-on-set-time="endDateOnSetTime()" data-before-render="endDateBeforeRender($view, $dates, $leftDate, $upDate, $rightDate)"></datetimepicker>
             </ul>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-hide="on()">
             <label for="questions" class="col-sm-2 control-label">Browse</label>
             <div class="col-sm-10">
               <button type="button" name="button" class="btn btn-default form-control" ng-click="show()">question suite</button>
+            </div>
+          </div>
+          <div class="form-group" ng-hide="on() || id">
+            <label for="groups" class="col-sm-2 control-label">Upload</label>
+            <div class="col-sm-10">
+              <button type="button" name="button" class="btn btn-default form-control" ng-click="addGroups()">groups</button>
             </div>
           </div>
         </form>

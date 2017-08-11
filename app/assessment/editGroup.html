@@ -1,0 +1,47 @@
+<div class="modal fade">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">{{title}}</h4>
+      </div>
+      <div class="modal-body">
+        <p>You can use the upload function to add a set of groups, however, note that only the group(s) with no member in registered in another group can be added!</p>
+        <label for="search">Search:  <input ng-model="searchText" type="text"></label>
+        <button type="button" ng-click="addGroup()" class="btn btn-default">Add a New Group</button>
+        <button type="button" ng-click="upload()" class="btn btn-default">Upload</button>
+        <div class="display">
+          <div class="panel panel-primary" ng-repeat="group in prettyGroups | filter: searchText track by $index" ng-init="groupIndex = $index">
+            <div class="panel-body">
+              <div ng-hide="editing[groupIndex]">
+                {{group}}
+              </div>
+              <div ng-show="editing[groupIndex]" ng-repeat="member in editingGroup track by $index">
+                <input type="text" ng-model="editingGroup[$index]">
+              </div>
+              <button type="button" class="btn btn-default btn-sm" ng-click="addBox()" ng-show="editing[groupIndex]">
+                      <span class="glyphicon glyphicon-plus"></span>
+              </button>
+              <button type="button" class="btn btn-default pull-right" ng-click="editGroup(groupIndex)" ng-hide="editing[groupIndex]">
+                      <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+              <button type="button" class="btn btn-default pull-right" ng-click="deleteGroup(groupIndex)" ng-hide="editing[groupIndex]">
+                      <span class="glyphicon glyphicon-trash"></span>
+              </button>
+              <button type="button" class="btn btn-default pull-right" ng-click="confirmGroup()" ng-show="editing[groupIndex]">
+                      <span class="glyphicon glyphicon-ok"></span>
+              </button>
+              <button type="button" class="btn btn-default pull-right" ng-click="cancelEdit()" ng-show="editing[groupIndex]">
+                      <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
+        <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

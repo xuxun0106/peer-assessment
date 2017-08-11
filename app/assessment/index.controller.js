@@ -28,11 +28,10 @@
               vm.studentPast = [];
               for (var n = 0; n < data.length; n++) {
                 AssessmentService.GetByCourse(data[n].code).then(function(a) {
-                  var now = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
                   for (var i = 0; i < a.length; i++) {
-                    if (moment(a[i].startDate).isSameOrBefore(now) && moment(a[i].endDate).isAfter(now)) {
+                    if (ongoing(a[i])) {
                       vm.studentOngoing.push(a[i]);
-                    } else if (moment(a[i].endDate).isSameOrBefore(now)) {
+                    } else if (past(a[i])) {
                       vm.studentPast.push(a[i]);
                     }
                   }
@@ -40,72 +39,59 @@
               }
               //})
               // .catch(function(err) {
-              //   console.log(err);
+              //   FlashService.Error(err);
               // });
             }
           });
         }
 
         vm.formGroup = function(a) {
-          ModalService.showModal({
-            templateUrl: "assessment/formGroup.html",
-            controller: "GroupController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: {
-              user: vm.user,
-              assessment: a._id
-            }
-          }).then(function(modal) {
-            modal.element.modal();
-            modal.close.then(function(result) {});
+          openModal(ModalService, "assessment/formGroup.html", "GroupController", {
+            user: vm.user,
+            assessment: a._id
+          });
+        };
+
+        vm.editGroup = function(a) {
+          openModal(ModalService, "assessment/editGroup.html", "EditGroupController", {
+            title: "You can view and edit groups here",
+            assessment: a
           });
         };
 
         vm.doAssessment = function(a) {
-          ModalService.showModal({
-            templateUrl: "assessment/doAssessment.html",
-            controller: "AssessmentController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: {
-              user: vm.user,
-              assessment: a
-            }
-          }).then(function(modal) {
-            modal.element.modal();
-            modal.close.then(function(result) {
-              if (result) {
-                if (result.first === true) {
-                  ResultService.Create({
-                      author: result.author,
-                      group: result.group,
-                      result: result.result,
-                      comments: result.comments
-                    })
-                    .then(function() {
-                      FlashService.Success('Assessment completed!');
-                    })
-                    .catch(function(err) {
-                      console.log(err);
-                    });
-                } else {
-                  ResultService.Update(result)
-                    .then(function() {
-                      FlashService.Success('Assessment saved!');
-                    })
-                    .catch(function(err) {
-                      console.log(err);
-                    });
-                }
+          openModal(ModalService, "assessment/doAssessment.html", "AssessmentController", {
+            user: vm.user,
+            assessment: a
+          }, function(result) {
+            if (result) {
+              if (result.first === true) {
+                ResultService.Create({
+                    author: result.author,
+                    group: result.group,
+                    result: result.result,
+                    comments: result.comments
+                  })
+                  .then(function() {
+                    FlashService.Success('Assessment completed!');
+                  })
+                  .catch(function(err) {
+                    FlashService.Error(err);
+                  });
+              } else {
+                ResultService.Update(result)
+                  .then(function() {
+                    FlashService.Success('Assessment saved!');
+                  })
+                  .catch(function(err) {
+                    FlashService.Error(err);
+                  });
               }
-            });
+            }
           });
         };
 
-        vm.show = function() {
+        vm.createAssessment = function() {
           newAssessment({
             title: "Create a new assessment",
             author: vm.user,
@@ -120,17 +106,8 @@
         };
 
         vm.viewAssessment = function(a) {
-          ModalService.showModal({
-            templateUrl: "assessment/viewAssessment.html",
-            controller: "ViewController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: {
-              assessment: a
-            }
-          }).then(function(modal) {
-            modal.element.modal();
+          openModal(ModalService, "assessment/viewAssessment.html", "ViewController", {
+            assessment: a
           });
         };
 
@@ -150,7 +127,7 @@
 
         vm.editAssessment = function(a) {
           newAssessment({
-            title: "Create a new assessment",
+            title: "Edit this assessment",
             author: vm.user,
             courseCode: a.courseCode,
             courseName: a.courseName,
@@ -198,36 +175,40 @@
         };
 
         function newAssessment(option) {
-          ModalService.showModal({
-            templateUrl: "assessment/newAssessment.html",
-            controller: "NewController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: option
-          }).then(function(modal) {
-            modal.element.modal();
-            modal.close.then(function(result) {
-              if (result) {
-                if (result._id) {
-                  AssessmentService.Update(result).then(function() {
-                      FlashService.Success('Assessment updated!');
-                      instructorGet();
-                    })
-                    .catch(function(error) {
-                      FlashService.Error(error);
-                    });
-                } else {
-                  AssessmentService.Create(result).then(function() {
-                      FlashService.Success('Assessment saved!');
-                      instructorGet();
-                    })
-                    .catch(function(error) {
-                      FlashService.Error(error);
-                    });
-                }
+          openModal(ModalService, "assessment/newAssessment.html", "NewController", option, function(result) {
+            if (result) {
+              if (result._id) {
+                AssessmentService.Update(result).then(function() {
+                    FlashService.Success('Assessment updated!');
+                    instructorGet();
+                  })
+                  .catch(function(error) {
+                    FlashService.Error(error);
+                  });
+              } else {
+                var groups = result.groups;
+                delete result.groups;
+                AssessmentService.Create(result).then(function(assessmentId) {
+                    FlashService.Success('Assessment saved!');
+                    instructorGet();
+                    if (groups !== []) {
+                      for (var n = 0, len = groups.length; n < len; n++) {
+                        GroupService.Create({
+                            assessment: assessmentId,
+                            member: groups[n],
+                            locked: true
+                          })
+                          .catch(function(error) {
+                            FlashService.Error(error);
+                          });
+                      }
+                    }
+                  })
+                  .catch(function(error) {
+                    FlashService.Error(error);
+                  });
               }
-            });
+            }
           });
         }
 
@@ -236,11 +217,10 @@
             vm.instructorUpcoming = [];
             vm.instructorOngoing = [];
             vm.instructorPast = [];
-            var now = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
             for (var i = 0; i < a.length; i++) {
-              if (moment(a[i].startDate).isSameOrBefore(now) && moment(a[i].endDate).isAfter(now)) {
+              if (ongoing(a[i])) {
                 vm.instructorOngoing.push(a[i]);
-              } else if (moment(a[i].endDate).isSameOrBefore(now)) {
+              } else if (past(a[i])) {
                 vm.instructorPast.push(a[i]);
               } else {
                 vm.instructorUpcoming.push(a[i]);
@@ -252,9 +232,22 @@
     ])
     .controller('NewController', [
       '$scope', '$element', 'title', 'close', 'author', 'ModalService', 'UserService',
-      'courseCode', 'courseName', 'questions', 'name', 'startDate', 'endDate', 'id',
+      'courseCode', 'courseName', 'questions', 'name', 'startDate', 'endDate', 'id', 'FlashService',
       function($scope, $element, title, close, author, ModalService, UserService,
-        courseCode, courseName, questions, name, startDate, endDate, id) {
+        courseCode, courseName, questions, name, startDate, endDate, id, FlashService) {
+        $scope.on = function() {
+          if (startDate && endDate) {
+            return ongoing({
+              startDate,
+              endDate
+            }) || past({
+              startDate,
+              endDate
+            });
+          }
+          return false;
+        };
+
         if (startDate) {
           $scope.dateRangeStart = moment(startDate).subtract(moment(startDate).utcOffset() / 60, 'hours');
         } else {
@@ -274,12 +267,15 @@
         $scope.questions = questions;
         $scope.author = author;
         $scope.title = title;
+        $scope.searchText = "";
+        $scope.groups = [];
+        $scope.id = id;
 
         UserService.GetAllCourses().then(function(data) {
             $scope.courses = data;
           })
           .catch(function(err) {
-            console.log(err);
+            FlashService.Error(err);
           });
 
         $scope.setCourse = function(c) {
@@ -307,7 +303,8 @@
               startDate: moment($scope.dateRangeStart).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
               endDate: moment($scope.dateRangeEnd).format('ddd, DD MMM YYYY HH:mm:ss ZZ'),
               questions: $scope.questions,
-              author: $scope.author
+              author: $scope.author,
+              groups: $scope.groups
             }, 500);
           }
         };
@@ -325,24 +322,32 @@
         }
 
         $scope.show = function() {
-
-          ModalService.showModal({
-            templateUrl: "assessment/questionSuite.html",
-            controller: "SelectController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: {
-              title: "Select questions",
-              selected: $scope.questions
+          openModal(ModalService, "assessment/questionSuite.html", "SelectController", {
+            title: "Select questions",
+            selected: $scope.questions
+          }, function(result) {
+            if (result) {
+              $scope.questions = result.questions;
             }
-          }).then(function(modal) {
-            modal.element.modal();
-            modal.close.then(function(result) {
-              if (result) {
-                $scope.questions = result.questions;
+          });
+        };
+
+        $scope.addGroups = function() {
+          openModal(ModalService, "assessment/addGroups.html", "UploadGroupController", {
+            title: "Paste the group infomation from CATe"
+          }, function(result) {
+            if (result) {
+              var groups = result.groups;
+              for (var n = 0, len = groups.length; n < len; n++) {
+                if (groups[n][0] === "#") {
+                  continue;
+                }
+                var group = groups[n].split(":");
+                group.splice(0, 2);
+                group.splice(-1, 1);
+                $scope.groups.push(group);
               }
-            });
+            }
           });
         };
 
@@ -386,13 +391,13 @@
       }
     ])
     .controller('SelectController', [
-      '$scope', '$element', 'title', 'close', 'selected', 'UserService', 'QuestionService',
-      function($scope, $element, title, close, selected, UserService, QuestionService) {
+      '$scope', '$element', 'title', 'close', 'selected', 'UserService', 'QuestionService', 'ModalService', 'FlashService',
+      function($scope, $element, title, close, selected, UserService, QuestionService, ModalService, FlashService) {
 
         $scope.title = title;
         $scope.selected = selected;
         $scope.questions = [];
-        var init = null;
+        $scope.searchText = "";
 
         getAllQuestions();
 
@@ -408,6 +413,17 @@
           $element.modal('hide');
 
           close(null, 500);
+        };
+
+        $scope.order = function() {
+          openModal(ModalService, "assessment/order.html", "OrderController", {
+            title: "You can drag and drop the questions to change the order",
+            selected: $scope.selected
+          }, function(result) {
+            if (result) {
+              $scope.selected = result.selected;
+            }
+          });
         };
 
         $scope.toggle = function(item, list, ind) {
@@ -439,18 +455,7 @@
           return index > -1;
         };
 
-        $scope.moved = function(index, q) {
-          if ($scope.selected[index].text === init) {
-            $scope.selected.splice(index, 1);
-          } else {
-            $scope.selected.splice(index + 1, 1);
-          }
-          init = null;
-        }
 
-        $scope.start = function(q) {
-          init = q;
-        }
 
         function getAllQuestions() {
           UserService.GetCurrent().then(function(user) {
@@ -462,8 +467,8 @@
       }
     ])
     .controller('GroupController', [
-      '$scope', '$element', 'close', 'GroupService', 'user', 'assessment',
-      function($scope, $element, close, GroupService, user, assessment) {
+      '$scope', '$element', 'close', 'GroupService', 'user', 'assessment', 'FlashService',
+      function($scope, $element, close, GroupService, user, assessment, FlashService) {
 
         var currentGroup = null,
           allGroups = [],
@@ -484,7 +489,7 @@
                 $scope.locked = true;
               })
               .catch(function(err) {
-                console.log(err);
+                FlashService.Error(err);
               })
           }
         }
@@ -522,7 +527,7 @@
               getGroup();
             })
             .catch(function(error) {
-              console.log(error);
+              FlashService.Error(error);
             });
         }
 
@@ -535,7 +540,7 @@
                 getGroup();
               })
               .catch(function(error) {
-                console.log(error);
+                FlashService.Error(error);
               });
           } else {
             for (var i = 0; i < oldGroup.length; i++) {
@@ -548,7 +553,7 @@
                     getGroup();
                   })
                   .catch(function(error) {
-                    console.log(error);
+                    FlashService.Error(error);
                   });
               }
             }
@@ -583,12 +588,12 @@
                     }
                   })
                   .catch(function(err) {
-                    console.log(err);
+                    FlashService.Error(err);
                   });
               }
             })
             .catch(function(err) {
-              console.log(err);
+              FlashService.Error(err);
             });
         }
 
@@ -610,8 +615,8 @@
       }
     ])
     .controller('AssessmentController', [
-      '$scope', '$element', 'close', 'user', 'assessment', 'GroupService', 'ResultService', '$timeout',
-      function($scope, $element, close, user, assessment, GroupService, ResultService, $timeout) {
+      '$scope', '$element', 'close', 'user', 'assessment', 'GroupService', 'ResultService', '$timeout', 'FlashService',
+      function($scope, $element, close, user, assessment, GroupService, ResultService, $timeout, FlashService) {
         $scope.title = assessment.courseName + " " + assessment.name;
         $scope.status = "";
         $scope.locked = false;
@@ -650,7 +655,7 @@
                     }
                   })
                   .catch(function(err) {
-                    console.log(err);
+                    FlashService.Error(err);
                   });
                 $scope.groupId = g._id;
                 $scope.locked = true;
@@ -667,7 +672,7 @@
             }
           })
           .catch(function(err) {
-            console.log(err);
+            FlashService.Error(err);
           });
 
         $scope.toggle = function(item, list) {
@@ -743,8 +748,8 @@
       }
     ])
     .controller('ViewController', [
-      '$scope', '$element', 'assessment', 'close',
-      function($scope, $element, assessment, close) {
+      '$scope', '$element', 'assessment', 'close', 'FlashService',
+      function($scope, $element, assessment, close, FlashService) {
 
         $scope.title = assessment.courseCode + " " + assessment.courseName + " " + assessment.name;
         $scope.questions = assessment.questions;
@@ -758,6 +763,270 @@
         };
 
       }
+    ])
+    .controller('OrderController', [
+      '$scope', '$element', 'title', 'close', 'selected',
+      function($scope, $element, title, close, selected) {
+
+        $scope.title = title;
+        $scope.selected = selected;
+        var init = null;
+
+        $scope.close = function() {
+          close({
+            selected: $scope.selected
+          }, 500);
+        };
+
+        $scope.cancel = function() {
+
+          $element.modal('hide');
+
+          close(null, 500);
+        };
+
+        $scope.moved = function(index, q) {
+          if ($scope.selected[index].text === init) {
+            $scope.selected.splice(index, 1);
+          } else {
+            $scope.selected.splice(index + 1, 1);
+          }
+          init = null;
+        };
+
+        $scope.start = function(q) {
+          init = q;
+        };
+
+      }
+    ])
+    .controller('UploadGroupController', [
+      '$scope', '$element', 'title', 'close',
+      function($scope, $element, title, close) {
+
+        $scope.title = title;
+        $scope.text = "";
+
+        $scope.close = function() {
+          if ($scope.text === "") {
+            close(null, 500);
+          } else {
+            var groups = $scope.text.split("\n");
+            close({
+              groups
+            }, 500);
+          }
+        };
+
+        $scope.cancel = function() {
+
+          $element.modal('hide');
+
+          close(null, 500);
+        };
+
+      }
+    ])
+    .controller('EditGroupController', [
+      '$scope', '$element', 'title', 'close', 'assessment', 'GroupService', 'FlashService', 'ModalService',
+      function($scope, $element, title, close, assessment, GroupService, FlashService, ModalService) {
+
+        $scope.title = title;
+        $scope.prettyGroups = [];
+        $scope.searchText = "";
+        $scope.editing = [];
+        $scope.editingGroup = [];
+        var groups = [];
+        var editingIndex = null;
+        var creating = false;
+
+        GroupService.GetByAssessment(assessment._id).then(function(gs) {
+            groups = gs;
+            for (var n = 0, len = gs.length; n < len; n++) {
+              $scope.prettyGroups.push(renderMember(gs[n].member));
+              $scope.editing.push(false);
+            }
+          })
+          .catch(function(err) {
+            FlashService.Error(err);
+          });
+
+        $scope.editGroup = function(index) {
+          $scope.editing[index] = true;
+          $scope.editingGroup = groups[index].member;
+          editingIndex = index;
+        };
+
+        $scope.addBox = function() {
+          $scope.editingGroup.push("");
+        };
+
+        $scope.deleteGroup = function(index) {
+          deleteGrp(index);
+        };
+
+        $scope.addGroup = function() {
+          editingIndex = groups.length;
+          $scope.prettyGroups.push("");
+          $scope.editing.push(true);
+          creating = true;
+        };
+
+        $scope.confirmGroup = function() {
+          for (var n = 0, len = $scope.editingGroup.length; n < len; n++) {
+            if ($scope.editingGroup[n] === "") {
+              $scope.editingGroup.splice(n, 1);
+              n--;
+            }
+          }
+
+          if (creating) {
+            if ($scope.editingGroup.length === 0) {
+              $scope.cancelEdit();
+            } else {
+              var newGroup = {
+                assessment: assessment._id,
+                member: $scope.editingGroup,
+                locked: true
+              }
+              GroupService.Create(newGroup).then(function(group) {
+                  groups.push(group);
+                  $scope.prettyGroups[editingIndex] = renderMember(group.member);
+                  creating = false;
+                  $scope.cancelEdit();
+                })
+                .catch(function(err) {
+                  alert(err);
+                });
+            }
+          } else {
+            if ($scope.editingGroup.length === 0) {
+              deleteGrp(editingIndex);
+            } else {
+              groups[editingIndex].member = $scope.editingGroup;
+              GroupService.Update(groups[editingIndex])
+                .then(function() {
+                  $scope.prettyGroups[editingIndex] = renderMember($scope.editingGroup);
+                  $scope.cancelEdit();
+                })
+                .catch(function(error) {
+                  FlashService.Error(error);
+                });
+            }
+          }
+        };
+
+        $scope.cancelEdit = function() {
+          if (creating) {
+            $scope.editing.splice(editingIndex, 1);
+            $scope.prettyGroups.splice(editingIndex, 1);
+            creating = false;
+          } else {
+            $scope.editing[editingIndex] = false;
+          }
+          $scope.editingGroup = [];
+          editingIndex = null;
+        };
+
+        $scope.upload = function() {
+          openModal(ModalService, "assessment/addGroups.html", "UploadGroupController", {
+            title: "Paste the group infomation from CATe"
+          }, function(result) {
+            if (result) {
+              var gs = result.groups;
+              for (var n = 0, len = gs.length; n < len; n++) {
+                if (gs[n][0] === "#") {
+                  continue;
+                }
+                var group = gs[n].split(":");
+                group.splice(0, 2);
+                group.splice(-1, 1);
+
+                var newGroup = {
+                  assessment: assessment._id,
+                  member: group,
+                  locked: true
+                }
+                GroupService.Create(newGroup).then(function(g) {
+                    groups.push(g);
+                    $scope.prettyGroups.push(renderMember(g.member));
+                    $scope.editing.push(false);
+                  });
+              }
+            }
+          });
+        };
+
+        $scope.close = function() {
+          close(null, 500);
+        };
+
+        $scope.cancel = function() {
+
+          $element.modal('hide');
+
+          close(null, 500);
+        };
+
+        function deleteGrp(index) {
+          GroupService.Delete(groups[index]._id).then(function() {
+              groups.splice(index, 1);
+              $scope.prettyGroups.splice(index, 1);
+              $scope.editing.splice(index, 1);
+              $scope.editingGroup = [];
+              editingIndex = null;
+            })
+            .catch(function(err) {
+              FlashService.Error(err);
+            });
+        }
+      }
     ]);
+
+  function ongoing(time) {
+    var now = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
+    if (moment(time.startDate).isSameOrBefore(now) && moment(time.endDate).isAfter(now)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function past(time) {
+    var now = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
+    if (moment(time.endDate).isSameOrBefore(now)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function openModal(ModalService, url, controller, option, callback = function(result) {}) {
+    ModalService.showModal({
+      templateUrl: url,
+      controller: controller,
+      preClose: (modal) => {
+        modal.element.modal('hide');
+      },
+      inputs: option
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(function(result) {
+        callback(result);
+      });
+    });
+  }
+
+  function renderMember(member) {
+    if (member.length < 1) {
+      return "None";
+    }
+    var groupMembers = member[0];
+    for (var j = 1; j < member.length; j++) {
+      groupMembers += ", ";
+      groupMembers += member[j];
+    }
+    return groupMembers;
+  }
 
 })();

@@ -29,7 +29,7 @@ function create(Param) {
       function(err, data) {
         if (err) deferred.reject(err);
 
-        deferred.resolve();
+        deferred.resolve(data.ops[0]._id);
       });
   }
 

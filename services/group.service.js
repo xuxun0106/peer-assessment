@@ -20,8 +20,8 @@ module.exports = service;
 function getByUser(query) {
   var deferred = Q.defer();
   db.groups.findOne({
-    assessment : query.assessment,
-    member : query.member
+    assessment: query.assessment,
+    member: query.member
   }, function(err, g) {
     if (err) {
       deferred.reject(err);
@@ -48,17 +48,18 @@ function getById(id) {
 }
 
 function create(Group) {
-
   var deferred = Q.defer();
 
   db.groups.findOne({
     assessment: Group.assessment,
-    member: Group.member[0]
+    member: {
+      $in: Group.member
+    }
   }, function(err, g) {
     if (err) deferred.reject(err);
 
     if (g) {
-      deferred.reject('You are already in a group!');
+      deferred.reject('Please quit current group first!');
     } else {
       createGroup();
     }
@@ -71,7 +72,7 @@ function create(Group) {
       function(err, data) {
         if (err) deferred.reject(err);
 
-        deferred.resolve();
+        deferred.resolve(data.ops[0]);
       });
   }
 
@@ -99,16 +100,16 @@ function update(_id, Group) {
 
   db.groups.update({
       _id: mongo.helper.toObjectID(_id)
-    },{
-      $set : {
-        member : Group.member,
-        locked : Group.locked
+    }, {
+      $set: {
+        member: Group.member,
+        locked: Group.locked
       }
     },
     function(err, data) {
       if (err) deferred.reject(err);
       else
-      deferred.resolve();
+        deferred.resolve();
     });
 
 
