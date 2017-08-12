@@ -1,0 +1,24 @@
+{
+  "name": "app",
+  "main": "app.js",
+  "description": "",
+  "authors": [
+    "Xun Xu"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-drag-and-drop-lists": "^2.1.0",
+    "angular-modal-service": "^0.12.1",
+    "angularjs-slider": "^6.2.3",
+    "ngGentle": "^0.0.1"
+  }
+}
