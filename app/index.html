@@ -16,8 +16,8 @@
   <header>
     <ul class="nav nav-tabs">
       <li ng-class="{active: activeTab === 'assessment'}"><a ui-sref="assessment">Assesements</a></li>
-      <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'question'}"><a ui-sref="question">Questions</a></li>
-      <li ng-show="permissions.instructor" ng-class="{active: activeTab === 'results'}"><a ui-sref="results">Results</a></li>
+      <li ng-show="user.type==='instructor'" ng-class="{active: activeTab === 'question'}"><a ui-sref="question">Questions</a></li>
+      <li ng-class="{active: activeTab === 'results'}"><a ui-sref="results">Results</a></li>
       <li><a href="/login" target="_self">Logout</a></li>
     </ul>
     <div class="flash-message" ng-if="flash">
@@ -42,7 +42,6 @@
   <script type="text/javascript" src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js"></script>
   <script type="text/javascript" src="bower_components/angularjs-slider/dist/rzslider.min.js"></script>
   <script type="text/javascript" src="bower_components/angular-drag-and-drop-lists/angular-drag-and-drop-lists.min.js"></script>
-  <script type="text/javascript" src="bower_components/ngGentle/ngGentle.js"></script>
 
   <!-- application scripts -->
   <script src="app.js"></script>

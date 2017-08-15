@@ -710,7 +710,10 @@
         function finished() {
           for (var i = 0, len = $scope.results.length; i < len; i++) {
             for (var j = 0, len2 = $scope.results[i].length; j < len2; j++) {
-              if ($scope.results[i][j] === undefined || $scope.results[i][j] === null) {
+              // if ($scope.results[i][j] === undefined || $scope.results[i][j] === null) {
+              //   return false;
+              // }
+              if (!$scope.results[i][j]) {
                 return false;
               }
             }

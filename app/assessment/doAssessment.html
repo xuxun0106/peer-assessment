@@ -21,7 +21,7 @@
                 <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
                   <label><input type="checkbox" name="{{m+questionIndex}}" ng-checked="exists(option, results[memberIndex][questionIndex])" ng-click="toggle(option, results[memberIndex][questionIndex])">{{option}}</label>
                 </div>
-                <textarea rows="3" ng-if="q.type=='Text'" name="{{m+questionIndex}}" ng-model="results[memberIndex][questionIndex]"></textarea>
+                <textarea rows="3" ng-if="q.type=='Text'" class="form-control" name="{{m+questionIndex}}" ng-model="results[memberIndex][questionIndex]"></textarea>
                 <rzslider ng-if="q.type=='Slider'" rz-slider-model="results[memberIndex][questionIndex]" rz-slider-options="{floor: 0, ceil: 100, step: 10}"></rzslider>
               </div>
               <textarea placeholder="Leave your comment here" rows="3" class="form-control display" ng-if="q.type!='Text'" name="{{m+questionIndex}}" ng-model="comments[questionIndex]"></textarea>

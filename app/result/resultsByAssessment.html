@@ -1,13 +1,46 @@
 <h1>{{assessment.courseName}}</h1>
-
+<button type="button" class="btn btn-default" ng-click="setWeightings()">Set up weightings</button>
+<button type="button" class="btn btn-default" ng-click="uploadGrades()">Upload group grades</button>
+<button type="button" class="btn btn-default" ng-click="saveGrades()">Save group grades</button>
+<button type="button" class="btn btn-default" ng-click="downloadGrades()">Download modified grades</button>
+<button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="publishState">Publish results</button>
+<button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="!publishState">Make results private</button>
 <div class="display">
-  <div class="panel panel-primary" ng-repeat="group in groups track by $index">
+  <div class="panel panel-primary" ng-repeat="group in groups track by $index" ng-init="groupIndex = $index">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{prettyMembers[$index]}}</h3>
+    </div>
     <div class="panel-body">
-      {{groupMembers[$index]}}
-      <button type="button" class="btn btn-default pull-right" ng-click="show(group._id)">Feedback</button>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Overall performance (weightings applied)</h3>
+        </div>
+        <div class="penel-body">
+          <table class="table table-striped table-hover">
+            <thead>
+              <th></th>
+              <th ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">{{scoreReceiver}}</th>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">SPA</th>
+                <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">{{overallSPA[scoreReceiver]}}</td>
+              </tr>
+              <tr>
+                <th scope="row">SAPA</th>
+                <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">{{overallSAPA[scoreReceiver]}}</td>
+              </tr>
+              <tr>
+                <th scope="row">Flag</th>
+                <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index" ng-class="{'red' : flag(overallSAPA[scoreReceiver])}"><span class="glyphicon glyphicon-flag"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <label>Group grade: <input type="number" ng-model="groupGrades[group._id]"></label>
+      <button type="button" class="btn btn-default pull-right" ng-click="show(group._id)">More feedback</button>
     </div>
   </div>
 </div>
-<button type="button" class="btn btn-default" ng-click="setWeightings()">Set up weightings</button>
-<button type="button" class="btn btn-default">Upload Group Grades</button>
-<button type="button" class="btn btn-default">Download Modified Grades</button>

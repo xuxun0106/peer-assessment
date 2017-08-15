@@ -20,7 +20,7 @@
                 <div class="checkbox-inline" ng-repeat="option in q.options" ng-if="q.type=='Multiple choice'">
                   <label><input type="checkbox">{{option}}</label>
                 </div>
-                <textarea rows="3" ng-if="q.type=='Text'"></textarea>
+                <textarea rows="3" ng-if="q.type=='Text'" class="form-control"></textarea>
                 <rzslider ng-if="q.type=='Slider'" rz-slider-options="{floor: 0, ceil: 100, step: 10}"></rzslider>
 
               <textarea placeholder="Comment" rows="3" class="form-control display" ng-if="q.type!='Text'"></textarea>

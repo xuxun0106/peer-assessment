@@ -3,7 +3,7 @@
 
     angular
         .module('app', ['ui.router', 'angularModalService',
-        'ui.bootstrap.datetimepicker', 'rzModule', 'dndLists', 'ngGentle'])
+        'ui.bootstrap.datetimepicker', 'rzModule', 'dndLists'])
         .config(config)
         .run(run)
         .controller('PermissionCtrl',['$scope', 'UserService',function($scope, UserService){
@@ -14,16 +14,8 @@
           function initController() {
             UserService.GetCurrent().then(function (user) {
                   $scope.user = user;
-                  $scope.permissions =
-                  {
-                    instructor : isInstructor()
-                  }
               });
             }
-
-          function isInstructor() {
-              return ($scope.user.type === 'instructor');
-          }
         }]);
 
 

@@ -3,44 +3,95 @@
 
   angular
     .module('app')
-    .controller('Result.IndexController', ['UserService', 'AssessmentService', '$scope', '$state', 'FlashService',
-      function(UserService, AssessmentService, $scope, $state, FlashService) {
+    .controller('Result.IndexController', ['UserService', 'AssessmentService',
+      '$scope', '$state', 'FlashService', 'GroupService', 'ModalService',
+      function(UserService, AssessmentService, $scope, $state, FlashService, GroupService, ModalService) {
         $scope.assessments = [];
+        $scope.groups = [];
+        $scope.user = {};
 
         UserService.GetCurrent()
           .then(function(user) {
-            AssessmentService.GetByAuthor(user.username)
-              .then(function(a) {
-                var now = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
-                for (var i = 0; i < a.length; i++) {
-                  if (moment(a[i].endDate).isSameOrBefore(now)) {
-                    $scope.assessments.push(a[i]);
+            $scope.user = user;
+            if (user.type === 'instructor') {
+              AssessmentService.GetByAuthor(user.username)
+                .then(function(a) {
+                  var now = moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ');
+                  for (var i = 0; i < a.length; i++) {
+                    if (moment(a[i].endDate).isSameOrBefore(now)) {
+                      $scope.assessments.push(a[i]);
+                    }
                   }
-                }
-              })
-              .catch(function(err) {
-                FlashService.Error(err);
-              });
+                })
+                .catch(function(err) {
+                  FlashService.Error(err);
+                });
+            } else {
+              //UserService.GetCourses().then(function(course) {
+              var course = user.course;
+              for (var n = 0; n < course.length; n++) {
+                AssessmentService.GetByCourse(course[n].code).then(function(assessments) {
+                  for (var i = 0; i < assessments.length; i++) {
+                    var assessment = assessments[i];
+                    if (assessment.publish) {
+                      publish(user.username, assessment);
+                    }
+                  }
+                });
+              }
+              //})
+              // .catch(function(err) {
+              //   FlashService.Error(err);
+              // });
+            }
           })
           .catch(function(err) {
             FlashService.Error(err);
           });
+
+        $scope.show = function(index) {
+          openModal(ModalService, "result/feedback.html", "FeedbackController", {
+            group: $scope.groups[index]._id,
+            assessment: $scope.assessments[index],
+            weightings: null,
+            user: $scope.user
+          });
+        };
 
         $scope.resultByAssessment = function(id) {
           $state.go('resultByAssessment', {
             assessmentId: id
           });
         };
+
+        function publish(username, assessment) {
+          GroupService.GetByUser(username, assessment._id).then(function(group) {
+              if (group) {
+                $scope.assessments.push(assessment);
+                $scope.groups.push(group);
+              }
+            })
+            .catch(function(err) {
+              FlashService.Error(err);
+            });
+        }
       }
     ])
     .controller('ResultByAssessmentController', ['$scope', '$stateParams',
-      'GroupService', 'AssessmentService', 'ModalService', 'FlashService',
-      function($scope, $stateParams, GroupService, AssessmentService, ModalService, FlashService) {
+      'GroupService', 'AssessmentService', 'ModalService', 'FlashService', 'ResultService',
+      function($scope, $stateParams, GroupService, AssessmentService, ModalService,
+        FlashService, ResultService) {
 
         $scope.assessment = null;
         $scope.groups = [];
-        $scope.groupMembers = [];
+        $scope.prettyMembers = [];
         $scope.weightings = [];
+        $scope.groupResults = [];
+        $scope.groupMembers = [];
+        $scope.overallSPA = {};
+        $scope.overallSAPA = {};
+        $scope.groupGrades = {};
+        $scope.publishState = false;
         var spa = {};
         var sapa = {};
         var scoreQuestions = [];
@@ -49,6 +100,7 @@
         AssessmentService.GetById(assessmentId)
           .then(function(a) {
             $scope.assessment = a;
+            $scope.publishState = a.publish || false;
             var count = 0;
             for (var n = 0, len = a.questions.length; n < len; n++) {
               if (a.questions[n].type === 'Single choice' || a.questions[n].type === 'Slider') {
@@ -59,69 +111,140 @@
             $scope.weightings = Array.apply(null, Array(count)).map(function(item, i) {
               return Number((100 / count).toFixed(2));
             });
-          })
+          });
 
         GroupService.GetByAssessment(assessmentId)
           .then(function(g) {
             $scope.groups = g;
             for (var i = 0; i < g.length; i++) {
+              if (g[i].grade !== undefined || g[i].grade !== null) {
+                $scope.groupGrades[g[i]._id] = g[i].grade;
+              }
+              ResultService.GetByGroup(g[i]._id).then(function(results) {
+                  var result = calOverallFactors(results.groupMember, $scope.weightings, $scope.assessment, results.results);
+                  for (var n = 0, len = results.groupMember.length; n < len; n++) {
+                    var member = results.groupMember[n];
+                    $scope.overallSPA[member] = result.overallSPA[member];
+                    $scope.overallSAPA[member] = result.overallSAPA[member];
+                    $scope.groupResults.push(results);
+                  }
+                })
+                .catch(function(err) {
+                  FlashService.Error(err);
+                });
               var member = g[i].member;
-              $scope.groupMembers[i] = renderMember(member);
+              $scope.groupMembers[i] = member;
+              $scope.prettyMembers[i] = renderMember(member);
             }
           })
           .catch(function(err) {
             FlashService.Error(err);
-          })
+          });
+
+        $scope.flag = function(sapa) {
+          return isSuspicious(sapa);
+        };
 
         $scope.show = function(groupId) {
-          ModalService.showModal({
-            templateUrl: "result/feedback.html",
-            controller: "FeedbackController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: {
-              group: groupId,
-              assessment: $scope.assessment,
-              weightings: $scope.weightings
+          openModal(ModalService, "result/feedback.html", "FeedbackController", {
+            group: groupId,
+            assessment: $scope.assessment,
+            weightings: $scope.weightings,
+            user: {
+              type: 'instructor'
             }
-          }).then(function(modal) {
-            modal.element.modal();
-            modal.close.then(function(result) {
-              if (result) {
-                spa[result.group] = result.spa;
-                sapa[result.group] = result.sapa;
-              }
-            });
           });
         };
 
         $scope.setWeightings = function() {
-          ModalService.showModal({
-            templateUrl: "result/setWeightings.html",
-            controller: "WeightingController",
-            preClose: (modal) => {
-              modal.element.modal('hide');
-            },
-            inputs: {
-              weightings: $scope.weightings,
-              questions: scoreQuestions
-            }
-          }).then(function(modal) {
-            modal.element.modal();
-            modal.close.then(function(result) {
-              if (result) {
-                $scope.weightings = result.weightings;
+          openModal(ModalService, "result/setWeightings.html", "WeightingController", {
+            weightings: $scope.weightings,
+            questions: scoreQuestions
+          }, function(result) {
+            if (result) {
+              $scope.weightings = result.weightings;
+              for (var i = 0, len = $scope.groupResults.length; i < len; i++) {
+                var result = calOverallFactors($scope.groupResults[i].groupMember, $scope.weightings, $scope.assessment, $scope.groupResults[i].results);
+                for (var n = 0, len = $scope.groupResults[i].groupMember.length; n < len; n++) {
+                  var member = $scope.groupResults[i].groupMember[n];
+                  $scope.overallSPA[member] = result.overallSPA[member];
+                  $scope.overallSAPA[member] = result.overallSAPA[member];
+                }
               }
+            }
+          });
+        };
+
+        $scope.saveGrades = function() {
+          for (var n = 0, len = $scope.groups.length; n < len; n++) {
+            var group = $scope.groups[n];
+            group.grade = $scope.groupGrades[group._id] || 0;
+            GroupService.Update(group).then(function() {
+                FlashService.Success("Grades saved.");
+              })
+              .catch(function(err) {
+                FlashService.Error(err);
+              });
+          }
+        };
+
+        $scope.downloadGrades = function() {
+          var grades = [];
+          for (var n = 0, len = $scope.groups.length; n < len; n++) {
+            var group = $scope.groups[n]._id;
+            var groupGrade = $scope.groupGrades[group];
+            for (var i = 0, len2 = $scope.groups[n].member.length; i < len2; i++) {
+              var member = $scope.groups[n].member[i];
+              var spa = $scope.overallSPA[member];
+              var grade = Number((spa * groupGrade).toFixed(2));
+              var pair = Array(member, grade);
+              grades.push(pair);
+            }
+          }
+          var csvContent = "data:text/csv;charset=utf-8,";
+          grades.forEach(function(infoArray, index) {
+            var dataString = infoArray.join(",");
+            csvContent += dataString + "\n";
+          });
+          var filename = $scope.assessment.courseCode + " " + $scope.assessment.courseName + " " + $scope.assessment.name;
+          var encodedUri = encodeURI(csvContent);
+          var link = document.createElement('a');
+          link.setAttribute('href', encodedUri);
+          link.setAttribute('download', filename);
+          link.click();
+        };
+
+        $scope.publishResults = function() {
+          var toState = {
+            _id: assessmentId,
+            publish: !$scope.publishState
+          };
+          AssessmentService.Update(toState).then(function() {
+              if ($scope.publishState) {
+                FlashService.Success("Results are private now!");
+              } else {
+                FlashService.Success("Results published to students!");
+              }
+              $scope.publishState = !$scope.publishState;
+            })
+            .catch(function(err) {
+              FlashService.Error(err);
             });
+        }
+
+        $scope.uploadGrades = function() {
+          openModal(ModalService, "result/uploadFile.html", "UploadController", {}, function(result) {
+            if (result) {
+              console.log(result);
+              //$scope.saveGrades()
+            }
           });
         };
       }
     ])
     .controller('FeedbackController', [
-      '$scope', '$element', 'group', 'close', 'assessment', 'ResultService', 'weightings', 'FlashService',
-      function($scope, $element, group, close, assessment, ResultService, weightings, FlashService) {
-
+      '$scope', '$element', 'group', 'close', 'assessment', 'ResultService', 'weightings', 'FlashService', 'user',
+      function($scope, $element, group, close, assessment, ResultService, weightings, FlashService, user) {
         $scope.groupMembers = [];
         $scope.noComplete = "None";
         $scope.assessment = assessment;
@@ -130,7 +253,7 @@
         $scope.rawResults = [];
         $scope.overallSPA = {};
         $scope.overallSAPA = {};
-        var w = weightings.slice();
+        $scope.user = user;
 
         ResultService.GetByGroup(group)
           .then(function(data) {
@@ -139,43 +262,65 @@
             $scope.comments = data.comments;
             $scope.results = data.results;
             $scope.rawResults = data.rawResultForIndividual;
-            for (var i = 0, len2 = $scope.groupMembers.length; i < len2; i++) {
-              var member = $scope.groupMembers[i];
-              $scope.overallSPA[member] = 0;
-              $scope.overallSAPA[member] = 0;
-            }
-            for (var n = 0, len = assessment.questions.length; n < len; n++) {
-              var type = assessment.questions[n].type;
-              if (type === 'Single choice' || type === 'Slider') {
-                var weighting = w.shift();
-                for (var i = 0, len2 = $scope.groupMembers.length; i < len2; i++) {
-                  var member = $scope.groupMembers[i]
-                  $scope.overallSPA[member] += $scope.results[n].spa[member] * weighting / 100;
-                  $scope.overallSAPA[member] += $scope.results[n].sapa[member] * weighting / 100;
-                }
-              }
-            }
-            for (var i = 0, len2 = $scope.groupMembers.length; i < len2; i++) {
-              var member = $scope.groupMembers[i];
-              $scope.overallSPA[member] = Number($scope.overallSPA[member].toFixed(2));
-              $scope.overallSAPA[member] = Number($scope.overallSAPA[member].toFixed(2));
+            if (user.type === 'instructor') {
+              var factors = calOverallFactors($scope.groupMembers, weightings, assessment, $scope.results);
+              $scope.overallSPA = factors.overallSPA;
+              $scope.overallSAPA = factors.overallSAPA;
             }
           })
           .catch(function(err) {
             FlashService.Error(err);
           })
 
+        $scope.isSelf = function(person) {
+          if (person === user.username) {
+            return 'You';
+          } else {
+            return 'Member'
+          }
+        };
+
         $scope.flag = function(sapa) {
-          if (sapa >= 0.90 && sapa <= 1.10)
-            return false;
-          return true;
+          return isSuspicious(sapa);
         };
 
         $scope.close = function() {
+          close(null, 500);
+        };
+
+        $scope.cancel = function() {
+
+          $element.modal('hide');
+
+          close(null, 500);
+        };
+
+      }
+    ])
+    .controller('UploadController', [
+      '$scope', '$element', 'close', '$timeout',
+      function($scope, $element, close, $timeout) {
+
+        var grades = null;
+
+        $timeout(function() {
+          var input = document.getElementById("file");
+          input.onchange = function() {
+            var file = this.files[0];
+            if (file) {
+              var reader = new FileReader();
+              reader.readAsText(file, "gbk");
+              reader.onload = function() {
+                grades = this.result;
+              }
+            }
+          }
+        });
+
+        $scope.close = function() {
+
           close({
-            spa: $scope.overallSPA,
-            sapa: $scope.overallSAPA,
-            group: group
+            grades
           }, 500);
         };
 
@@ -183,15 +328,11 @@
 
           $element.modal('hide');
 
-          close({
-            spa: $scope.overallSPA,
-            sapa: $scope.overallSAPA,
-            group: group
-          }, 500);
+          close(null, 500);
         };
-
       }
-    ]).controller('WeightingController', [
+    ])
+    .controller('WeightingController', [
       '$scope', '$element', 'weightings', 'close', 'questions',
       function($scope, $element, weightings, close, questions) {
 
@@ -233,4 +374,58 @@
     }
     return groupMembers;
   }
+
+  function isSuspicious(sapa) {
+    if (sapa >= 0.90 && sapa <= 1.10)
+      return false;
+    return true;
+  }
+
+  function calOverallFactors(groupMembers, weightings, assessment, results) {
+    var w = weightings.slice();
+    var overallSPA = {};
+    var overallSAPA = {};
+    for (var i = 0, len2 = groupMembers.length; i < len2; i++) {
+      var member = groupMembers[i];
+      overallSPA[member] = 0;
+      overallSAPA[member] = 0;
+    }
+    for (var n = 0, len = assessment.questions.length; n < len; n++) {
+      var type = assessment.questions[n].type;
+      if (type === 'Single choice' || type === 'Slider') {
+        var weighting = w.shift();
+        for (var i = 0, len2 = groupMembers.length; i < len2; i++) {
+          var member = groupMembers[i]
+          overallSPA[member] += results[n].spa[member] * weighting / 100;
+          overallSAPA[member] += results[n].sapa[member] * weighting / 100;
+        }
+      }
+    }
+    for (var i = 0, len2 = groupMembers.length; i < len2; i++) {
+      var member = groupMembers[i];
+      overallSPA[member] = Number(overallSPA[member].toFixed(2));
+      overallSAPA[member] = Number(overallSAPA[member].toFixed(2));
+    }
+    return {
+      overallSPA,
+      overallSAPA
+    };
+  }
+
+  function openModal(ModalService, url, controller, option, callback = function(result) {}) {
+    ModalService.showModal({
+      templateUrl: url,
+      controller: controller,
+      preClose: (modal) => {
+        modal.element.modal('hide');
+      },
+      inputs: option
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(function(result) {
+        callback(result);
+      });
+    });
+  }
+
 })();
