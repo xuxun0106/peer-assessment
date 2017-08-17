@@ -1,5 +1,5 @@
 ﻿{
     "connectionString": "mongodb://localhost:27017/peer-assessment-system",
-    "apiUrl": "http://imperialfair.herokuapp.com",
+    "apiUrl": "http://imperialfair.herokuapp.com/api",
     "secret": "2017 Msc Individual Project"
 }
