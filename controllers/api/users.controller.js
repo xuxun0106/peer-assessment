@@ -49,13 +49,13 @@ function authenticateUser(req, res) {
       }
     })
     .catch(function(err) {
-      console.log(err);
       res.status(400).send(err);
     });
 }
 
 
 function getCurrentUser(req, res) {
+  console.log(req.user.sub);
   userService.getById(req.user.sub)
     .then(function(user) {
       if (user) {

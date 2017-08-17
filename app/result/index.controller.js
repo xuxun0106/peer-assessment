@@ -247,7 +247,7 @@
 
         $scope.uploadGrades = function() {
           openModal(ModalService, "result/uploadFile.html", "UploadController", {}, function(result) {
-            if (result.grades) {
+            if (result && result.grades) {
               var uploadedGrades = result.grades.split('\n');
               uploadedGrades.forEach(function(item, i) {
                 uploadedGrades[i] = uploadedGrades[i].split(',');
