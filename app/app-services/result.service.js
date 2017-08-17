@@ -33,8 +33,8 @@
             return $http.put('/api/results/' + result._id, result).then(handleSuccess, handleError);
         }
 
-        function Delete(_id) {
-            return $http.delete('/api/results/' + _id).then(handleSuccess, handleError);
+        function Delete(groupId) {
+            return $http.delete('/api/results/' + groupId).then(handleSuccess, handleError);
         }
 
         // private functions

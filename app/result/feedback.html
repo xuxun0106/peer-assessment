@@ -5,11 +5,14 @@
         <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">{{assessment.courseName+" "+assessment.name}}</h4>
         <br>
-        <p>SPA factor indicates the performance of a person compared to the average level of the group.</p>
-        <p>SAPA factor indicates a person's self-rating compared to ratings from other members.</p>
+        <p>The SPA factors indicate the performance of a person compared to the average level of the group.</p>
+        <p>The SAPA factors indicate a person's self-rating compared to ratings from other members.</p>
+        <p ng-if="user.type==='instructor'">The flags indicate the potential status of a person (black: no problem,
+          <font class="yellow">yellow</font>: cheater,
+          <font class="red">red</font>: free-rider).</p>
       </div>
       <div class="modal-body">
-        <div ng-if="user.type==='instructor'" class="panel panel-default">
+        <div ng-if="user.type==='instructor' && numSummertive!==0" class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">Overall performance (weightings applied)</h3>
           </div>
@@ -30,7 +33,11 @@
                 </tr>
                 <tr>
                   <th scope="row">Flag</th>
-                  <td ng-repeat="scoreReceiver in groupMembers track by $index" ng-class="{'red' : flag(overallSAPA[scoreReceiver])}"><span class="glyphicon glyphicon-flag"></span></td>
+                  <td ng-repeat="scoreReceiver in groupMembers track by $index">
+                    <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-flag"></span>
+                    <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
+                    <span ng-if="flag(overallSAPA[scoreReceiver])" class="yellow glyphicon glyphicon-flag"></span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -60,12 +67,17 @@
                     <td ng-repeat="scoreGiver in groupMembers track by $index">{{rawResults[questionIndex][scoreReceiver][scoreGiver] || '-'}}</td>
                     <td>{{results[questionIndex].spa[scoreReceiver]}}</td>
                     <td>{{results[questionIndex].sapa[scoreReceiver]}}</td>
-                    <td ng-if="user.type==='instructor'" ng-class="{'red' : flag(results[questionIndex].sapa[scoreReceiver])}"><span class="glyphicon glyphicon-flag"></span></td>
+                    <td ng-if="user.type==='instructor'">
+                      <span ng-if="isOk(results[questionIndex].spa[scoreReceiver], results[questionIndex].sapa[scoreReceiver])" class="glyphicon glyphicon-flag"></span>
+                      <span ng-if="freeRider(results[questionIndex].spa[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
+                      <span ng-if="flag(results[questionIndex].sapa[scoreReceiver])" class="yellow glyphicon glyphicon-flag"></span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
               <p class="well" ng-repeat="(key, value) in comments[questionIndex]" ng-if="user.type==='instructor'"><b>{{key}}</b>: {{value}}</p>
               <p class="well" ng-repeat="(key, value) in comments[questionIndex]" ng-if="user.type==='student'"><b>{{isSelf(key)}}</b>: {{value}}</p>
+
             </div>
             <div class="" ng-if="assessment.questions[questionIndex].type === 'Multiple choice'">
               <table class="table table-striped table-hover">
@@ -84,9 +96,9 @@
             <div class="" ng-if="assessment.questions[questionIndex].type === 'Text'">
 
               <div ng-repeat="scoreReceiver in groupMembers track by $index" ng-init="receiverIndex = $index">
-                  <b>{{scoreReceiver}}</b>
-                  <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='instructor'"><b>{{key}}</b>: {{value}}</p>
-                  <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='student'"><b>{{isSelf(key)}}</b>: {{value}}</p>           
+                <b>{{scoreReceiver}}</b>
+                <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='instructor'"><b>{{key}}</b>: {{value}}</p>
+                <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='student'"><b>{{isSelf(key)}}</b>: {{value}}</p>
               </div>
             </div>
           </div>

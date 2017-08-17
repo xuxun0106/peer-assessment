@@ -145,13 +145,8 @@
               .then(function() {
                 GroupService.GetByAssessment(a._id).then(function(groups) {
                     groups.forEach(function(group) {
-                      ResultService.GetByGroup(group).then(function(results) {
-                          results.forEach(function(result) {
-                            ResultService.Delete(result._id)
-                              .catch(function(error) {
-                                FlashService.Error(error);
-                              });
-                          })
+                      ResultService.Delete(group).then(function(results) {
+                          
                         })
                         .catch(function(error) {
                           FlashService.Error(error);
@@ -458,10 +453,13 @@
 
 
         function getAllQuestions() {
-          UserService.GetCurrent().then(function(user) {
-            QuestionService.GetByAuthor(user.username).then(function(q) {
-              $scope.questions = q;
-            })
+          QuestionService.GetByAuthor("Example").then(function(q) {
+            $scope.questions = q;
+            UserService.GetCurrent().then(function(user) {
+              QuestionService.GetByAuthor(user.username).then(function(q) {
+                $scope.questions = $scope.questions.concat(q);
+              });
+            });
           });
         }
       }
@@ -951,10 +949,10 @@
                   locked: true
                 }
                 GroupService.Create(newGroup).then(function(g) {
-                    groups.push(g);
-                    $scope.prettyGroups.push(renderMember(g.member));
-                    $scope.editing.push(false);
-                  });
+                  groups.push(g);
+                  $scope.prettyGroups.push(renderMember(g.member));
+                  $scope.editing.push(false);
+                });
               }
             }
           });

@@ -86,25 +86,42 @@ function getByAuthor(_author) {
 function update(_id, newAssessment) {
   var deferred = Q.defer();
 
-  db.assessments.update({
-      _id: mongo.helper.toObjectID(_id)
-    }, {
-      $set: {
-        courseCode: newAssessment.courseCode,
-        courseName: newAssessment.courseName,
-        name: newAssessment.name,
-        startDate: newAssessment.startDate,
-        endDate: newAssessment.endDate,
-        questions: newAssessment.questions
-      }
-    },
-    function(err, data) {
-      if (err) deferred.reject(err);
-      else {
-        deferred.resolve();
-      }
-    });
+  if (newAssessment.publish !== undefined || newAssessment.publish !== null) {
+    db.assessments.update({
+        _id: mongo.helper.toObjectID(_id)
+      }, {
+        $set: {
+          publish: newAssessment.publish
+        }
+      },
+      function(err, data) {
+        if (err) deferred.reject(err);
+        else {
+          deferred.resolve();
+        }
+      });
+  }
 
+  if (newAssessment.name) {
+    db.assessments.update({
+        _id: mongo.helper.toObjectID(_id)
+      }, {
+        $set: {
+          courseCode: newAssessment.courseCode,
+          courseName: newAssessment.courseName,
+          name: newAssessment.name,
+          startDate: newAssessment.startDate,
+          endDate: newAssessment.endDate,
+          questions: newAssessment.questions
+        }
+      },
+      function(err, data) {
+        if (err) deferred.reject(err);
+        else {
+          deferred.resolve();
+        }
+      });
+  }
 
   return deferred.promise;
 }

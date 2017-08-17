@@ -5,6 +5,8 @@ var _ = require('lodash');
 var resultService = require('services/result.service');
 var groupService = require('services/group.service');
 var assessmentService = require('services/assessment.service');
+var Filter = require('bad-words');
+var filter = new Filter();
 
 router.get('/', getResult);
 router.post('/', createResult);
@@ -31,6 +33,7 @@ function getResult(req, res) {
     //get group information
     groupService.getById(req.query.group)
       .then(function(group) {
+        feedback.groupId = group._id;
         feedback.groupMember = group.member;
 
         //get assessment information
@@ -63,9 +66,7 @@ function getResult(req, res) {
   }
 
   function generateFeedback(data) {
-    if (data.length === 0) {
-      return;
-    }
+
 
     //initialise
     var numMember = feedback.groupMember.length;
@@ -74,6 +75,10 @@ function getResult(req, res) {
     feedback.complete = [];
     feedback.results = new Array(numQuestions);
     feedback.comments = new Array(numQuestions);
+
+    // if (data.length === 0) {
+    //   return;
+    // }
 
     //find student(s) who did not complete assessment
     for (var n = 0; n < numComplete; n++) {
@@ -86,7 +91,7 @@ function getResult(req, res) {
       var comment = {};
       for (var i = 0; i < numComplete; i++) {
         if (data[i].comments[j]) {
-          comment[data[i].author] = data[i].comments[j];
+          comment[data[i].author] = filter.clean(data[i].comments[j]);
         }
       }
       feedback.comments[j] = comment;
@@ -112,7 +117,11 @@ function getResult(req, res) {
         var member = feedback.groupMember[i];
         question[member] = {};
         for (var j = 0; j < numComplete; j++) {
-          question[member][data[j].author] = data[j].result[member][n];
+          if (typeof data[j].result[member][n] === "string") {
+            question[member][data[j].author] = filter.clean(data[j].result[member][n]);
+          } else {
+            question[member][data[j].author] = data[j].result[member][n];
+          }
         }
       }
       feedback.rawResultForIndividual.push(question);

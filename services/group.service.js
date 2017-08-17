@@ -18,17 +18,34 @@ service.delete = _delete;
 module.exports = service;
 
 function getByUser(query) {
+  query.member = query.member.split(',');
   var deferred = Q.defer();
-  db.groups.findOne({
-    assessment: query.assessment,
-    member: query.member
-  }, function(err, g) {
-    if (err) {
-      deferred.reject(err);
-    } else {
-      deferred.resolve(g);
-    }
-  });
+  if (typeof query.member === "string") {
+    db.groups.findOne({
+      assessment: query.assessment,
+      member: query.member
+    }, function(err, g) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(g);
+      }
+    });
+  } else if (Array.isArray(query.member)) {
+    db.groups.findOne({
+      assessment: query.assessment,
+      member: {
+        $all: query.member
+      }
+    }, function(err, g) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(g);
+      }
+    });
+  }
+
 
   return deferred.promise;
 }
@@ -98,20 +115,34 @@ function getByAssessment(_assessment) {
 function update(_id, Group) {
   var deferred = Q.defer();
 
-  db.groups.update({
-      _id: mongo.helper.toObjectID(_id)
-    }, {
-      $set: {
-        member: Group.member,
-        locked: Group.locked
-      }
-    },
-    function(err, data) {
-      if (err) deferred.reject(err);
-      else
-        deferred.resolve();
-    });
-
+  if (Group.grade !== undefined || Group.grade !== null) {
+    db.groups.update({
+        _id: mongo.helper.toObjectID(_id)
+      }, {
+        $set: {
+          grade: Group.grade
+        }
+      },
+      function(err, data) {
+        if (err) deferred.reject(err);
+        else
+          deferred.resolve();
+      });
+  } else {
+    db.groups.update({
+        _id: mongo.helper.toObjectID(_id)
+      }, {
+        $set: {
+          member: Group.member,
+          locked: Group.locked
+        }
+      },
+      function(err, data) {
+        if (err) deferred.reject(err);
+        else
+          deferred.resolve();
+      });
+  }
 
   return deferred.promise;
 }

@@ -26,10 +26,14 @@
     vm.types = ['Single choice', 'Multiple choice', 'Text', 'Slider'];
     vm.levels = ['Strongly disagree', 'Disagree', 'Neither agree nor disagree', 'Agree', 'Strongly Agree'];
 
-    UserService.GetCurrent().then(function(user) {
-      QuestionService.GetByAuthor(user.username).then(function(q) {
-        vm.questions = q;
-      })
+
+    QuestionService.GetByAuthor("Example").then(function(q) {
+      vm.questions = q;
+      UserService.GetCurrent().then(function(user) {
+        QuestionService.GetByAuthor(user.username).then(function(q) {
+          vm.questions = vm.questions.concat(q);
+        });
+      });
     });
 
     vm.setType = function(t) {
@@ -83,8 +87,13 @@
       } else {
         QuestionService.Create(vm.newq).then(function() {
             FlashService.Success('Question saved!');
-            QuestionService.GetByAuthor(vm.newq.author).then(function(q) {
+            QuestionService.GetByAuthor("Example").then(function(q) {
               vm.questions = q;
+              UserService.GetCurrent().then(function(user) {
+                QuestionService.GetByAuthor(user.username).then(function(q) {
+                  vm.questions = vm.questions.concat(q);
+                });
+              });
             });
             vm.emptyQuestion();
             removeDiv();
@@ -98,8 +107,13 @@
     vm.deleteQuestion = function(q) {
       QuestionService.Delete(q._id).then(function() {
           FlashService.Success('Question deleted!')
-          QuestionService.GetByAuthor(vm.newq.author).then(function(qs) {
-            vm.questions = qs;
+          QuestionService.GetByAuthor("Example").then(function(q) {
+            vm.questions = q;
+            UserService.GetCurrent().then(function(user) {
+              QuestionService.GetByAuthor(user.username).then(function(q) {
+                vm.questions = vm.questions.concat(q);
+              });
+            });
           });
         })
         .catch(function(error) {

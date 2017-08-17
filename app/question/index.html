@@ -1,6 +1,6 @@
-<h2>My questions
+<h1>Questions
   <button id="new" type="button" class="btn btn-default pull-right" ng-click="questionCtrl.emptyQuestion()">New Question</button>
-</h2>
+</h1>
 <div class="question-creator">
   <h3>Create a new question</h3>
   <form method="post" class="question-builder">
@@ -46,7 +46,7 @@
         <textarea rows="2" ng-if="q.type=='Text'" class="width-control"></textarea>
         <rzslider ng-if="q.type=='Slider'" class="width-control" rz-slider-options="{floor: 0, ceil: 100, step: 10}"></rzslider>
       </div>
-      <button type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.deleteQuestion(q)">
+      <button title="Delete" type="button" class="btn btn-default btn-sm pull-right form-group" ng-if="q.author!=='Example'" ng-click="questionCtrl.deleteQuestion(q)">
               <span class="glyphicon glyphicon-trash"></span>
       </button>
       <!-- <button id="edit" type="button" class="btn btn-default btn-sm pull-right form-group" ng-click="questionCtrl.editQuestion(q, $index)">

@@ -9,7 +9,7 @@
       <b>From: </b>{{a.startDate}}
       <b>To: </b>{{a.endDate}}
       <button type="button" ng-if="user.type === 'student'" class="btn btn-default pull-right" ng-click="show($index)">feedback</button>
-      <button type="button" ng-if="user.type === 'instructor'" class="btn btn-default pull-right" ng-click="resultByAssessment(a._id)">
+      <button title="View" type="button" ng-if="user.type === 'instructor'" class="btn btn-default pull-right" ng-click="resultByAssessment(a._id)">
               <span class="glyphicon glyphicon-eye-open"></span>
       </button>
     </div>

@@ -19,8 +19,8 @@ module.exports = service;
 function getByUser(query) {
   var deferred = Q.defer();
   db.results.findOne({
-    group : query.group,
-    author : query.member
+    group: query.group,
+    author: query.member
   }, function(err, g) {
     if (err) {
       deferred.reject(err);
@@ -99,11 +99,11 @@ function update(_id, Result) {
   return deferred.promise;
 }
 
-function _delete(id) {
+function _delete(groupId) {
   var deferred = Q.defer();
 
   db.results.remove({
-      _id: mongo.helper.toObjectID(id)
+      group: groupId
     },
     function(err) {
       if (err) deferred.reject(err);

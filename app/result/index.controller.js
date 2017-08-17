@@ -54,7 +54,8 @@
             group: $scope.groups[index]._id,
             assessment: $scope.assessments[index],
             weightings: null,
-            user: $scope.user
+            user: $scope.user,
+            numSummertive: null
           });
         };
 
@@ -92,6 +93,7 @@
         $scope.overallSAPA = {};
         $scope.groupGrades = {};
         $scope.publishState = false;
+        $scope.numSummertive = 0;
         var spa = {};
         var sapa = {};
         var scoreQuestions = [];
@@ -108,6 +110,7 @@
                 scoreQuestions.push(a.questions[n].text);
               }
             }
+            $scope.numSummertive = count;
             $scope.weightings = Array.apply(null, Array(count)).map(function(item, i) {
               return Number((100 / count).toFixed(2));
             });
@@ -145,6 +148,14 @@
           return isSuspicious(sapa);
         };
 
+        $scope.freeRider = function(spa) {
+          return isFreeRider(spa);
+        };
+
+        $scope.isOk = function(spa, sapa) {
+          return !isFreeRider(spa) && !isSuspicious(sapa);
+        };
+
         $scope.show = function(groupId) {
           openModal(ModalService, "result/feedback.html", "FeedbackController", {
             group: groupId,
@@ -152,7 +163,8 @@
             weightings: $scope.weightings,
             user: {
               type: 'instructor'
-            }
+            },
+            numSummertive: $scope.numSummertive
           });
         };
 
@@ -189,6 +201,7 @@
         };
 
         $scope.downloadGrades = function() {
+          var weighting = prompt("How much percent of marks should be influenced by peer assessment result?");
           var grades = [];
           for (var n = 0, len = $scope.groups.length; n < len; n++) {
             var group = $scope.groups[n]._id;
@@ -196,7 +209,7 @@
             for (var i = 0, len2 = $scope.groups[n].member.length; i < len2; i++) {
               var member = $scope.groups[n].member[i];
               var spa = $scope.overallSPA[member];
-              var grade = Number((spa * groupGrade).toFixed(2));
+              var grade = Number((spa * groupGrade * weighting / 100 + groupGrade * (1 - weighting / 100)).toFixed(2));
               var pair = Array(member, grade);
               grades.push(pair);
             }
@@ -234,17 +247,28 @@
 
         $scope.uploadGrades = function() {
           openModal(ModalService, "result/uploadFile.html", "UploadController", {}, function(result) {
-            if (result) {
-              console.log(result);
-              //$scope.saveGrades()
+            if (result.grades) {
+              var uploadedGrades = result.grades.split('\n');
+              uploadedGrades.forEach(function(item, i) {
+                uploadedGrades[i] = uploadedGrades[i].split(',');
+                var grade = uploadedGrades[i].splice(-1, 1);
+                GroupService.GetByUser(uploadedGrades[i], $scope.assessment._id).then(function(g) {
+                    $scope.groupGrades[g._id] = Number(grade);
+                  })
+                  .catch(function(err) {
+                    FlashService.Error("Please check the file you uploaded!");
+                  });
+              });
             }
           });
         };
+
       }
     ])
     .controller('FeedbackController', [
-      '$scope', '$element', 'group', 'close', 'assessment', 'ResultService', 'weightings', 'FlashService', 'user',
-      function($scope, $element, group, close, assessment, ResultService, weightings, FlashService, user) {
+      '$scope', '$element', 'group', 'close', 'assessment', 'ResultService',
+      'weightings', 'FlashService', 'user', 'numSummertive',
+      function($scope, $element, group, close, assessment, ResultService, weightings, FlashService, user, numSummertive) {
         $scope.groupMembers = [];
         $scope.noComplete = "None";
         $scope.assessment = assessment;
@@ -254,6 +278,7 @@
         $scope.overallSPA = {};
         $scope.overallSAPA = {};
         $scope.user = user;
+        $scope.numSummertive = numSummertive;
 
         ResultService.GetByGroup(group)
           .then(function(data) {
@@ -282,6 +307,14 @@
 
         $scope.flag = function(sapa) {
           return isSuspicious(sapa);
+        };
+
+        $scope.freeRider = function(spa) {
+          return isFreeRider(spa);
+        };
+
+        $scope.isOk = function(spa, sapa) {
+          return !isFreeRider(spa) && !isSuspicious(sapa);
         };
 
         $scope.close = function() {
@@ -379,6 +412,10 @@
     if (sapa >= 0.90 && sapa <= 1.10)
       return false;
     return true;
+  }
+
+  function isFreeRider(spa) {
+    return spa < 0.8;
   }
 
   function calOverallFactors(groupMembers, weightings, assessment, results) {

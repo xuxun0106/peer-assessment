@@ -5,6 +5,7 @@
 <button type="button" class="btn btn-default" ng-click="downloadGrades()">Download modified grades</button>
 <button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="publishState">Publish results</button>
 <button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="!publishState">Make results private</button>
+
 <div class="display">
   <div class="panel panel-primary" ng-repeat="group in groups track by $index" ng-init="groupIndex = $index">
     <div class="panel-heading">
@@ -12,7 +13,7 @@
     </div>
     <div class="panel-body">
 
-      <div class="panel panel-default">
+      <div class="panel panel-default" ng-if="numSummertive!==0">
         <div class="panel-heading">
           <h3 class="panel-title">Overall performance (weightings applied)</h3>
         </div>
@@ -33,7 +34,11 @@
               </tr>
               <tr>
                 <th scope="row">Flag</th>
-                <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index" ng-class="{'red' : flag(overallSAPA[scoreReceiver])}"><span class="glyphicon glyphicon-flag"></span></td>
+                <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">
+                  <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-flag"></span>
+                  <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
+                  <span ng-if="flag(overallSAPA[scoreReceiver])" class="yellow glyphicon glyphicon-flag"></span>
+                </td>
               </tr>
             </tbody>
           </table>
