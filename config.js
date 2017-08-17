@@ -1,5 +1,5 @@
 module.exports = {
   "connectionString": process.env.PROD_MONGODB,
-  "apiUrl": "http://impeirialfair.herokuapp.com",
+  "apiUrl": "https://imperialfair.herokuapp.com/",
   "secret": "2017 Msc Individual Project"
 };
