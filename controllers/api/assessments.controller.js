@@ -2,7 +2,8 @@ var config = require('config.js');
 var express = require('express');
 var router = express.Router();
 var assessmentService = require('services/assessment.service');
-
+var groupService = require('services/group.service');
+var resultService = require('services/result.service');
 
 router.get('/:username', getByAuthor);
 router.get('/', getByCourse)
@@ -66,9 +67,19 @@ function updateAssessment(req, res) {
 function deleteAssessment(req, res) {
   assessmentService.delete(req.params._id)
     .then(function() {
-      res.sendStatus(200);
-    })
-    .catch(function(err) {
-      res.status(400).send(err);
+      groupService.getByAssessment(req.params._id).then(function(groups) {
+          groups.forEach(function(group) {
+            resultService.delete(group._id).catch(function(err) {
+              res.status(400).send(err);
+            });
+            groupService.delete(group._id).catch(function(err) {
+              res.status(400).send(err);
+            });
+          })
+          res.sendStatus(200);
+        })
+        .catch(function(err) {
+          res.status(400).send(err);
+        });
     });
 }

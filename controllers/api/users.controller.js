@@ -159,7 +159,7 @@ function getCurrentUser(req, res) {
 //       });
 //     }
 //   });
-// } //TODO: error code and message
+// } 
 //
 //
 // function getCurrentUser(req, res) {

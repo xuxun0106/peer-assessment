@@ -143,24 +143,24 @@
           if (confirm("Are you sure?")) {
             AssessmentService.Delete(a._id)
               .then(function() {
-                GroupService.GetByAssessment(a._id).then(function(groups) {
-                    groups.forEach(function(group) {
-                      ResultService.Delete(group).then(function(results) {
-                          
-                        })
-                        .catch(function(error) {
-                          FlashService.Error(error);
-                        });
-                      GroupService.Delete(group._id)
-                        .catch(function(error) {
-                          FlashService.Error(error);
-                        });
-                    })
-                  })
-                  .catch(function(error) {
-                    FlashService.Error(error);
-                  });
-                FlashService.Success('Assessment saved!');
+                // GroupService.GetByAssessment(a._id).then(function(groups) {
+                //     groups.forEach(function(group) {
+                //       ResultService.Delete(group).then(function(results) {
+                //
+                //         })
+                //         .catch(function(error) {
+                //           FlashService.Error(error);
+                //         });
+                //       GroupService.Delete(group._id)
+                //         .catch(function(error) {
+                //           FlashService.Error(error);
+                //         });
+                //     })
+                //   })
+                //   .catch(function(error) {
+                //     FlashService.Error(error);
+                //   });
+                FlashService.Success('Assessment deleted!');
                 instructorGet();
               })
               .catch(function(error) {
