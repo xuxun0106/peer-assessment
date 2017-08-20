@@ -7,6 +7,7 @@
     </div>
     <div class="panel-body">
       <b>From: </b>{{a.startDate}}
+      <br>
       <b>To: </b>{{a.endDate}}
       <button type="button" ng-if="user.type === 'student'" class="btn btn-default pull-right" ng-click="show($index)">feedback</button>
       <button title="View" type="button" ng-if="user.type === 'instructor'" class="btn btn-default pull-right" ng-click="resultByAssessment(a._id)">
