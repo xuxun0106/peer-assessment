@@ -17,7 +17,7 @@
             <button type="button" ng-click="parseText()" class="btn btm-default">Add</button>
           </div>
         </form>
-        <div class="panel panel-primary" ng-repeat="group in prettyGroups" ng-init="groupIndex = $index">
+        <div class="panel panel-primary" ng-repeat="group in prettyGroups track by $index" ng-init="groupIndex = $index">
           <div class="panel-body">
             <div>
               {{group}}
