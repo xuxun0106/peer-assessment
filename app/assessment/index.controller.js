@@ -813,7 +813,7 @@
     .controller('UploadGroupController', [
       '$scope', '$element', 'title', 'close', 'groups',
       function($scope, $element, title, close, groups) {
-
+        console.log(groups);
         $scope.title = title;
         $scope.text = "";
         $scope.prettyGroups = [];
