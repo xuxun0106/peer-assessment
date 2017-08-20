@@ -813,19 +813,23 @@
     .controller('UploadGroupController', [
       '$scope', '$element', 'title', 'close', 'groups',
       function($scope, $element, title, close, groups) {
-        console.log(groups);
         $scope.title = title;
         $scope.text = "";
         $scope.prettyGroups = [];
         $scope.groups = groups;
 
         for (var n = 0, len = groups.length; n < len; n++) {
-          $scope.prettyGroups = renderMember($scope.groups[n]);
+          $scope.prettyGroups[n] = renderMember($scope.groups[n]);
         }
 
         $scope.deleteGroup = function(index) {
           $scope.prettyGroups.splice(index, 1);
           $scope.groups.splice(index, 1);
+        };
+
+        $scope.deleteAll = function() {
+          $scope.prettyGroups = [];
+          $scope.groups = [];
         };
 
         $scope.parseText = function() {
