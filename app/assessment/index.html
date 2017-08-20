@@ -29,7 +29,7 @@
       <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
     </div>
     <div class="panel-body">
-      <b>From: </b>{{renderDate(a.startDate)}}
+      <b>From: </b>{{a.startDate}}
       <br>
       <b>To: </b>{{a.endDate}}
       <button title="Clone" type="button" class="btn btn-default pull-right" ng-click="assessmentCtrl.copyAssessment(a)">
