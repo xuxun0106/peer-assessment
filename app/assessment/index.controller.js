@@ -139,49 +139,51 @@
 
         vm.copyAssessment = function(a) {
           GroupService.GetByAssessment(a._id).then(function(groups) {
-            console.log(groups);
-            if (groups) {
-              openModal(ModalService, "assessment/newAssessment.html", "NewController", {
-                title: "Create a new assessment",
-                author: vm.user,
-                courseCode: a.courseCode,
-                courseName: a.courseName,
-                questions: a.questions,
-                name: null,
-                startDate: null,
-                endDate: null,
-                id: null,
-                groups: groups
-              }, function(result) {
-                if (result) {
-                  var groups = result.groups;
-                  delete result.groups;
-                  AssessmentService.Create(result).then(function(assessmentId) {
-                      FlashService.Success('Assessment saved!');
-                      instructorGet();
-                      if (groups !== []) {
-                        for (var n = 0, len = groups.length; n < len; n++) {
-                          GroupService.Create({
-                              assessment: assessmentId,
-                              member: groups[n],
-                              locked: true
-                            })
-                            .catch(function(error) {
-                              FlashService.Error(error);
-                            });
+              for (var n = 0, len = groups.length; n < len; n++) {
+                groups[n] = groups[n].member;
+              }
+              if (groups) {
+                openModal(ModalService, "assessment/newAssessment.html", "NewController", {
+                  title: "Create a new assessment",
+                  author: vm.user,
+                  courseCode: a.courseCode,
+                  courseName: a.courseName,
+                  questions: a.questions,
+                  name: null,
+                  startDate: null,
+                  endDate: null,
+                  id: null,
+                  groups: groups
+                }, function(result) {
+                  if (result) {
+                    var groups = result.groups;
+                    delete result.groups;
+                    AssessmentService.Create(result).then(function(assessmentId) {
+                        FlashService.Success('Assessment saved!');
+                        instructorGet();
+                        if (groups !== []) {
+                          for (var n = 0, len = groups.length; n < len; n++) {
+                            GroupService.Create({
+                                assessment: assessmentId,
+                                member: groups[n],
+                                locked: true
+                              })
+                              .catch(function(error) {
+                                FlashService.Error(error);
+                              });
+                          }
                         }
-                      }
-                    })
-                    .catch(function(error) {
-                      FlashService.Error(error);
-                    });
-                }
-              });
-            }
-          })
-          .catch(function(err) {
-            FlashService.Error(err);
-          });
+                      })
+                      .catch(function(error) {
+                        FlashService.Error(error);
+                      });
+                  }
+                });
+              }
+            })
+            .catch(function(err) {
+              FlashService.Error(err);
+            });
         };
 
         vm.editAssessment = function(a) {
@@ -809,7 +811,7 @@
       }
     ])
     .controller('UploadGroupController', [
-      '$scope', '$element', 'title', 'close','groups',
+      '$scope', '$element', 'title', 'close', 'groups',
       function($scope, $element, title, close, groups) {
 
         $scope.title = title;
@@ -817,7 +819,7 @@
         $scope.prettyGroups = [];
         $scope.groups = groups;
 
-        for (var n=0, len=groups.length; n<len;n++) {
+        for (var n = 0, len = groups.length; n < len; n++) {
           $scope.prettyGroups = renderMember($scope.groups[n]);
         }
 
@@ -846,7 +848,7 @@
             close(null, 500);
           } else {
             close({
-              groups:$scope.groups
+              groups: $scope.groups
             }, 500);
           }
         };

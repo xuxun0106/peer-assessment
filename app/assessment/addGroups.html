@@ -13,8 +13,8 @@
           <div class="form-group">
             <div class="col-sm-10">
               <textarea name="groups" class="form-control" rows="20" cols="80" ng-model="text"></textarea>
-              <button type="button" ng-click="parseText()" class="btn">Add</button>
             </div>
+            <button type="button" ng-click="parseText()" class="btn btm-default">Add</button>
           </div>
         </form>
         <div class="panel panel-primary" ng-repeat="group in prettyGroups" ng-init="groupIndex = $index">
