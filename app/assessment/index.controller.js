@@ -139,6 +139,7 @@
 
         vm.copyAssessment = function(a) {
           GroupService.GetByAssessment(a._id).then(function(groups) {
+            console.log(groups);
             if (groups) {
               openModal(ModalService, "assessment/newAssessment.html", "NewController", {
                 title: "Create a new assessment",
@@ -205,17 +206,6 @@
                   FlashService.Error(error);
                 });
             }
-          });
-          newAssessment({
-            title: "Edit this assessment",
-            author: vm.user,
-            courseCode: a.courseCode,
-            courseName: a.courseName,
-            questions: a.questions,
-            name: a.name,
-            startDate: a.startDate,
-            endDate: a.endDate,
-            id: a._id
           });
         }
 
