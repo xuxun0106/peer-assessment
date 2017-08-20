@@ -351,7 +351,6 @@
           }, function(result) {
             if (result) {
               $scope.groups = result.groups;
-              console.log($scope.groups);
             }
           });
         };
@@ -1063,6 +1062,10 @@
       groupMembers += member[j];
     }
     return groupMembers;
+  }
+
+  function renderDate(string) {}
+    return str.subString(0, string.length-5);
   }
 
 })();
