@@ -1064,7 +1064,7 @@
     return groupMembers;
   }
 
-  function renderDate(string) {}
+  function renderDate(string) {
     return str.subString(0, string.length-5);
   }
 
