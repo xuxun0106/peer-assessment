@@ -139,10 +139,10 @@
 
         vm.copyAssessment = function(a) {
           GroupService.GetByAssessment(a._id).then(function(groups) {
-              for (var n = 0, len = groups.length; n < len; n++) {
-                groups[n] = groups[n].member;
-              }
               if (groups) {
+                for (var n = 0, len = groups.length; n < len; n++) {
+                  groups[n] = groups[n].member;
+                }
                 openModal(ModalService, "assessment/newAssessment.html", "NewController", {
                   title: "Create a new assessment",
                   author: vm.user,
@@ -848,13 +848,9 @@
         }
 
         $scope.close = function() {
-          if ($scope.text === "") {
-            close(null, 500);
-          } else {
-            close({
-              groups: $scope.groups
-            }, 500);
-          }
+          close({
+            groups: $scope.groups
+          }, 500);
         };
 
         $scope.cancel = function() {
