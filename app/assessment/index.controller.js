@@ -92,7 +92,7 @@
         };
 
         vm.createAssessment = function() {
-          newAssessment({
+          openModal(ModalService, "assessment/newAssessment.html", "NewController", {
             title: "Create a new assessment",
             author: vm.user,
             courseCode: null,
@@ -101,8 +101,34 @@
             name: null,
             startDate: null,
             endDate: null,
-            id: null
+            id: null,
+            groups: null
+          }, function(result) {
+            if (result) {
+              var groups = result.groups;
+              delete result.groups;
+              AssessmentService.Create(result).then(function(assessmentId) {
+                  FlashService.Success('Assessment saved!');
+                  instructorGet();
+                  if (groups !== []) {
+                    for (var n = 0, len = groups.length; n < len; n++) {
+                      GroupService.Create({
+                          assessment: assessmentId,
+                          member: groups[n],
+                          locked: true
+                        })
+                        .catch(function(error) {
+                          FlashService.Error(error);
+                        });
+                    }
+                  }
+                })
+                .catch(function(error) {
+                  FlashService.Error(error);
+                });
+            }
           });
+
         };
 
         vm.viewAssessment = function(a) {
@@ -112,20 +138,74 @@
         };
 
         vm.copyAssessment = function(a) {
-          newAssessment({
-            title: "Create a new assessment",
-            author: vm.user,
-            courseCode: a.courseCode,
-            courseName: a.courseName,
-            questions: a.questions,
-            name: null,
-            startDate: null,
-            endDate: null,
-            id: null
+          GroupService.GetByAssessment(a._id).then(function(groups) {
+            if (groups) {
+              openModal(ModalService, "assessment/newAssessment.html", "NewController", {
+                title: "Create a new assessment",
+                author: vm.user,
+                courseCode: a.courseCode,
+                courseName: a.courseName,
+                questions: a.questions,
+                name: null,
+                startDate: null,
+                endDate: null,
+                id: null,
+                groups: groups
+              }, function(result) {
+                if (result) {
+                  var groups = result.groups;
+                  delete result.groups;
+                  AssessmentService.Create(result).then(function(assessmentId) {
+                      FlashService.Success('Assessment saved!');
+                      instructorGet();
+                      if (groups !== []) {
+                        for (var n = 0, len = groups.length; n < len; n++) {
+                          GroupService.Create({
+                              assessment: assessmentId,
+                              member: groups[n],
+                              locked: true
+                            })
+                            .catch(function(error) {
+                              FlashService.Error(error);
+                            });
+                        }
+                      }
+                    })
+                    .catch(function(error) {
+                      FlashService.Error(error);
+                    });
+                }
+              });
+            }
+          })
+          .catch(function(err) {
+            FlashService.Error(err);
           });
         };
 
         vm.editAssessment = function(a) {
+          openModal(ModalService, "assessment/newAssessment.html", "NewController", {
+            title: "Edit this assessment",
+            author: vm.user,
+            courseCode: a.courseCode,
+            courseName: a.courseName,
+            questions: a.questions,
+            name: a.name,
+            startDate: a.startDate,
+            endDate: a.endDate,
+            id: a._id,
+            groups: null
+          }, function(result) {
+            if (result) {
+              AssessmentService.Update(result).then(function() {
+                  FlashService.Success('Assessment updated!');
+                  instructorGet();
+                })
+                .catch(function(error) {
+                  FlashService.Error(error);
+                });
+            }
+          });
           newAssessment({
             title: "Edit this assessment",
             author: vm.user,
@@ -143,23 +223,6 @@
           if (confirm("Are you sure?")) {
             AssessmentService.Delete(a._id)
               .then(function() {
-                // GroupService.GetByAssessment(a._id).then(function(groups) {
-                //     groups.forEach(function(group) {
-                //       ResultService.Delete(group).then(function(results) {
-                //
-                //         })
-                //         .catch(function(error) {
-                //           FlashService.Error(error);
-                //         });
-                //       GroupService.Delete(group._id)
-                //         .catch(function(error) {
-                //           FlashService.Error(error);
-                //         });
-                //     })
-                //   })
-                //   .catch(function(error) {
-                //     FlashService.Error(error);
-                //   });
                 FlashService.Success('Assessment deleted!');
                 instructorGet();
               })
@@ -168,44 +231,6 @@
               });
           }
         };
-
-        function newAssessment(option) {
-          openModal(ModalService, "assessment/newAssessment.html", "NewController", option, function(result) {
-            if (result) {
-              if (result._id) {
-                AssessmentService.Update(result).then(function() {
-                    FlashService.Success('Assessment updated!');
-                    instructorGet();
-                  })
-                  .catch(function(error) {
-                    FlashService.Error(error);
-                  });
-              } else {
-                var groups = result.groups;
-                delete result.groups;
-                AssessmentService.Create(result).then(function(assessmentId) {
-                    FlashService.Success('Assessment saved!');
-                    instructorGet();
-                    if (groups !== []) {
-                      for (var n = 0, len = groups.length; n < len; n++) {
-                        GroupService.Create({
-                            assessment: assessmentId,
-                            member: groups[n],
-                            locked: true
-                          })
-                          .catch(function(error) {
-                            FlashService.Error(error);
-                          });
-                      }
-                    }
-                  })
-                  .catch(function(error) {
-                    FlashService.Error(error);
-                  });
-              }
-            }
-          });
-        }
 
         function instructorGet() {
           AssessmentService.GetByAuthor(vm.user).then(function(a) {
@@ -227,9 +252,9 @@
     ])
     .controller('NewController', [
       '$scope', '$element', 'title', 'close', 'author', 'ModalService', 'UserService',
-      'courseCode', 'courseName', 'questions', 'name', 'startDate', 'endDate', 'id', 'FlashService',
+      'courseCode', 'courseName', 'questions', 'name', 'startDate', 'endDate', 'id', 'FlashService', 'groups',
       function($scope, $element, title, close, author, ModalService, UserService,
-        courseCode, courseName, questions, name, startDate, endDate, id, FlashService) {
+        courseCode, courseName, questions, name, startDate, endDate, id, FlashService, groups) {
         $scope.on = function() {
           if (startDate && endDate) {
             return ongoing({
@@ -263,7 +288,7 @@
         $scope.author = author;
         $scope.title = title;
         $scope.searchText = "";
-        $scope.groups = [];
+        $scope.groups = groups || [];
         $scope.id = id;
 
         UserService.GetAllCourses().then(function(data) {
@@ -329,19 +354,11 @@
 
         $scope.addGroups = function() {
           openModal(ModalService, "assessment/addGroups.html", "UploadGroupController", {
-            title: "Paste the group infomation from CATe"
+            title: "Paste the group infomation from CATe",
+            groups: $scope.groups
           }, function(result) {
             if (result) {
-              var groups = result.groups;
-              for (var n = 0, len = groups.length; n < len; n++) {
-                if (groups[n][0] === "#") {
-                  continue;
-                }
-                var group = groups[n].split(":");
-                group.splice(0, 2);
-                group.splice(-1, 1);
-                $scope.groups.push(group);
-              }
+              $scope.groups = result.groups;
             }
           });
         };
@@ -802,19 +819,43 @@
       }
     ])
     .controller('UploadGroupController', [
-      '$scope', '$element', 'title', 'close',
-      function($scope, $element, title, close) {
+      '$scope', '$element', 'title', 'close','groups',
+      function($scope, $element, title, close, groups) {
 
         $scope.title = title;
         $scope.text = "";
+        $scope.prettyGroups = [];
+        $scope.groups = groups;
+
+        for (var n=0, len=groups.length; n<len;n++) {
+          $scope.prettyGroups = renderMember($scope.groups[n]);
+        }
+
+        $scope.deleteGroup = function(index) {
+          $scope.prettyGroups.splice(index, 1);
+          $scope.groups.splice(index, 1);
+        };
+
+        $scope.addGroups() = function() {
+          var groups = $scope.text.split("\n");
+          for (var n = 0, len = groups.length; n < len; n++) {
+            if (groups[n][0] === "#") {
+              continue;
+            }
+            var group = groups[n].split(":");
+            group.splice(0, 2);
+            group.splice(-1, 1);
+            $scope.groups.push(group);
+            $scope.prettyGroups.push(renderMember(group))
+          }
+        }
 
         $scope.close = function() {
           if ($scope.text === "") {
             close(null, 500);
           } else {
-            var groups = $scope.text.split("\n");
             close({
-              groups
+              groups:$scope.groups
             }, 500);
           }
         };
