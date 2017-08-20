@@ -836,7 +836,7 @@
           $scope.groups.splice(index, 1);
         };
 
-        $scope.addGroups() = function() {
+        $scope.parseText = function() {
           var groups = $scope.text.split("\n");
           for (var n = 0, len = groups.length; n < len; n++) {
             if (groups[n][0] === "#") {
@@ -848,6 +848,7 @@
             $scope.groups.push(group);
             $scope.prettyGroups.push(renderMember(group))
           }
+          $scope.text = "";
         }
 
         $scope.close = function() {
