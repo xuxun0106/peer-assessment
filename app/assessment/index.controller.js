@@ -351,6 +351,7 @@
           }, function(result) {
             if (result) {
               $scope.groups = result.groups;
+              console.log($scope.groups);
             }
           });
         };
