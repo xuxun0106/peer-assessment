@@ -964,7 +964,7 @@
         };
 
         $scope.upload = function() {
-          openModal(ModalService, "assessment/addGroup.html", "UploadController", {
+          openModal(ModalService, "assessment/addGroup.html", "UploadGroupsController", {
             title: "Paste the group infomation from CATe"
           }, function(result) {
             if (result) {
@@ -1017,7 +1017,7 @@
         }
       }
     ])
-    .controller('UploadController', [
+    .controller('UploadGroupsController', [
       '$scope', '$element', 'title', 'close',
       function($scope, $element, title, close) {
 
