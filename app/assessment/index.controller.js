@@ -964,7 +964,7 @@
         };
 
         $scope.upload = function() {
-          openModal(ModalService, "assessment/addGroups.html", "UploadGroupController", {
+          openModal(ModalService, "assessment/addGroups.html", "UploadController", {
             title: "Paste the group infomation from CATe"
           }, function(result) {
             if (result) {
@@ -1015,6 +1015,33 @@
               FlashService.Error(err);
             });
         }
+      }
+    ])
+    .controller('UploadController', [
+      '$scope', '$element', 'title', 'close',
+      function($scope, $element, title, close) {
+
+        $scope.title = title;
+        $scope.text = "";
+
+        $scope.close = function() {
+          if ($scope.text === "") {
+            close(null, 500);
+          } else {
+            var groups = $scope.text.split("\n");
+            close({
+              groups
+            }, 500);
+          }
+        };
+
+        $scope.cancel = function() {
+
+          $element.modal('hide');
+
+          close(null, 500);
+        };
+
       }
     ]);
 
