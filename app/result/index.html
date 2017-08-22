@@ -1,7 +1,7 @@
 <h1>Results</h1>
-
+<label for="search">Search:  <input ng-model="searchText" type="text"></label>
 <div class="display">
-  <div class="panel panel-primary" ng-repeat="a in assessments track by $index">
+  <div class="panel panel-primary" ng-repeat="a in assessments | searchText track by $index">
     <div class="panel-heading">
       <h3 class="panel-title">{{a.courseCode+"  "+a.courseName+"  "+a.name}}</h3>
     </div>
