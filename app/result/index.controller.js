@@ -201,10 +201,8 @@
         };
 
         $scope.downloadGrades = function() {
-          var weighting = prompt("How much percent of marks should be influenced by peer assessment result?");
-          if (typeof weighting !== "number") {
-            alert("Invalid input!");
-          }
+          var weighting = Number(prompt("How much percent of marks should be influenced by peer assessment result?"));
+          console.log(weighting);
           var grades = [];
           for (var n = 0, len = $scope.groups.length; n < len; n++) {
             var group = $scope.groups[n]._id;
