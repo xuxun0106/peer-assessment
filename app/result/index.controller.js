@@ -202,31 +202,34 @@
 
         $scope.downloadGrades = function() {
           var weighting = Number(prompt("How much percent of marks should be influenced by peer assessment result?"));
-          console.log(weighting);
-          var grades = [];
-          for (var n = 0, len = $scope.groups.length; n < len; n++) {
-            var group = $scope.groups[n]._id;
-            var groupGrade = $scope.groupGrades[group];
-            for (var i = 0, len2 = $scope.groups[n].member.length; i < len2; i++) {
-              var member = $scope.groups[n].member[i];
-              var spa = $scope.overallSPA[member];
-              var grade = Number((spa * groupGrade * weighting / 100 + groupGrade * (1 - weighting / 100)).toFixed(2));
-              var pair = Array(member, grade);
-              grades.push(pair);
+          if (isNaN(weighting)) {
+            FlashService.Error("Invalid input!");
+          } else {
+            var grades = [];
+            for (var n = 0, len = $scope.groups.length; n < len; n++) {
+              var group = $scope.groups[n]._id;
+              var groupGrade = $scope.groupGrades[group];
+              for (var i = 0, len2 = $scope.groups[n].member.length; i < len2; i++) {
+                var member = $scope.groups[n].member[i];
+                var spa = $scope.overallSPA[member];
+                var grade = Number((spa * groupGrade * weighting / 100 + groupGrade * (1 - weighting / 100)).toFixed(2));
+                var pair = Array(member, grade);
+                grades.push(pair);
+              }
             }
+            var csvContent = "data:text/csv;charset=utf-8,";
+            grades.forEach(function(infoArray, index) {
+              var dataString = infoArray.join(",");
+              csvContent += dataString + "\n";
+            });
+            var filename = $scope.assessment.courseCode + " " + $scope.assessment.courseName + " " + $scope.assessment.name;
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement('a');
+            document.body.appendChild(link);
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', filename);
+            link.click();
           }
-          var csvContent = "data:text/csv;charset=utf-8,";
-          grades.forEach(function(infoArray, index) {
-            var dataString = infoArray.join(",");
-            csvContent += dataString + "\n";
-          });
-          var filename = $scope.assessment.courseCode + " " + $scope.assessment.courseName + " " + $scope.assessment.name;
-          var encodedUri = encodeURI(csvContent);
-          var link = document.createElement('a');
-          document.body.appendChild(link);
-          link.setAttribute('href', encodedUri);
-          link.setAttribute('download', filename);
-          link.click();
         };
 
         $scope.publishResults = function() {
