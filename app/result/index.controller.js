@@ -202,7 +202,7 @@
 
         $scope.downloadGrades = function() {
           var weighting = Number(prompt("How much percent of marks should be influenced by peer assessment result?"));
-          if (isNaN(weighting)) {
+          if (isNaN(weighting) || weighting <= 0 || weighting > 100) {
             FlashService.Error("Invalid input!");
           } else {
             var grades = [];
