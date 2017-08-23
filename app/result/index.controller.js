@@ -223,7 +223,7 @@
           var filename = $scope.assessment.courseCode + " " + $scope.assessment.courseName + " " + $scope.assessment.name;
           var encodedUri = encodeURI(csvContent);
           var link = document.createElement('a');
-          document.body.appendChild(a);
+          document.body.appendChild(link);
           link.setAttribute('href', encodedUri);
           link.setAttribute('download', filename);
           link.click();
