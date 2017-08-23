@@ -202,6 +202,9 @@
 
         $scope.downloadGrades = function() {
           var weighting = prompt("How much percent of marks should be influenced by peer assessment result?");
+          if (typeof weighting !== "number") {
+            alert("Invalid input!");
+          }
           var grades = [];
           for (var n = 0, len = $scope.groups.length; n < len; n++) {
             var group = $scope.groups[n]._id;
@@ -222,6 +225,7 @@
           var filename = $scope.assessment.courseCode + " " + $scope.assessment.courseName + " " + $scope.assessment.name;
           var encodedUri = encodeURI(csvContent);
           var link = document.createElement('a');
+          document.body.appendChild(a);
           link.setAttribute('href', encodedUri);
           link.setAttribute('download', filename);
           link.click();
