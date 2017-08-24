@@ -86,7 +86,7 @@ function update(_id, Result) {
       _id: mongo.helper.toObjectID(_id)
     }, {
       $set: {
-        result: Result.result
+        result: Result.result,
         comments: Result.comments
       }
     },
