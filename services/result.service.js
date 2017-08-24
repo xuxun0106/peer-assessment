@@ -87,6 +87,7 @@ function update(_id, Result) {
     }, {
       $set: {
         result: Result.result
+        comments: Result.comments
       }
     },
     function(err, data) {

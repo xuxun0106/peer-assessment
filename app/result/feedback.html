@@ -76,7 +76,7 @@
                 </tbody>
               </table>
               <p class="well" ng-repeat="(key, value) in comments[questionIndex]" ng-if="user.type==='instructor'"><b>{{key}}</b>: {{value}}
-                <button title="Delete" type="button" class="btn btn-default btn-sm pull-right"  ng-click="deleteComment(comments, key)">
+                <button title="Delete" type="button" class="btn btn-default btn-sm pull-right"  ng-click="deleteComment(questionIndex, key)">
                         <span class="glyphicon glyphicon-trash"></span>
                 </button>
               </p>

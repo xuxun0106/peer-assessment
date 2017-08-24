@@ -322,6 +322,18 @@
           return !isFreeRider(spa) && !isSuspicious(sapa);
         };
 
+        $scope.deleteComment = function(questionIndex, student) {
+          ResultService.GetByUser(student, group).then(function(result) {
+            result.comments[questionIndex] = null;
+            ResultService.Update(result).then(function() {
+              $scope.comments[questionIndex][student] = null;
+            });
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+        };
+
         $scope.close = function() {
           close(null, 500);
         };
