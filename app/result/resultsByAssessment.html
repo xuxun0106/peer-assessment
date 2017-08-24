@@ -33,7 +33,7 @@
                 <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">{{overallSAPA[scoreReceiver]}}</td>
               </tr>
               <tr>
-                <th scope="row">Flag</th>
+                <th scope="row">Status</th>
                 <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">
                   <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-ok"></span>
                   <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>

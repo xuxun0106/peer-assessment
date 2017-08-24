@@ -7,9 +7,9 @@
         <br>
         <p>The SPA factors indicate the performance of a person compared to the average level of the group.</p>
         <p>The SAPA factors indicate a person's self-rating compared to ratings from other members.</p>
-        <p ng-if="user.type==='instructor'">The flags indicate the potential status of a person (black: no problem,
-          <font class="yellow">yellow</font>: cheater,
-          <font class="red">red</font>: free-rider).</p>
+        <p ng-if="user.type==='instructor'">The status icons indicate the potential status of a person (black tick: no problem,
+          <font class="yellow">yellow warning sign</font>: cheater,
+          <font class="red">red flag</font>: free-rider).</p>
       </div>
       <div class="modal-body">
         <div ng-if="user.type==='instructor' && numSummertive!==0" class="panel panel-default">
@@ -32,7 +32,7 @@
                   <td ng-repeat="scoreReceiver in groupMembers track by $index">{{overallSAPA[scoreReceiver]}}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Flag</th>
+                  <th scope="row">Status</th>
                   <td ng-repeat="scoreReceiver in groupMembers track by $index">
                     <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-ok"></span>
                     <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
@@ -58,7 +58,7 @@
                   <th ng-repeat="scoreGiver in groupMembers track by $index" ng-init="giverIndex = $index" ng-if="user.type==='student'">Member</th>
                   <th>SPA</th>
                   <th>SAPA</th>
-                  <th ng-if="user.type==='instructor'">Flag</th>
+                  <th ng-if="user.type==='instructor'">Status</th>
                 </thead>
                 <tbody>
                   <tr ng-repeat="scoreReceiver in groupMembers track by $index" ng-init="receiverIndex = $index">
