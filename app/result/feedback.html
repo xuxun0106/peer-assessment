@@ -98,10 +98,13 @@
               </table>
             </div>
             <div class="" ng-if="assessment.questions[questionIndex].type === 'Text'">
-
               <div ng-repeat="scoreReceiver in groupMembers track by $index" ng-init="receiverIndex = $index">
                 <b>{{scoreReceiver}}</b>
-                <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='instructor'"><b>{{key}}</b>: {{value}}</p>
+                <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='instructor' && value"><b>{{key}}</b>: {{value}}
+                  <button title="Delete" type="button" class="btn btn-default btn-sm pull-right"  ng-click="deleteText(questionIndex, scoreReceiver, key)">
+                          <span class="glyphicon glyphicon-trash"></span>
+                  </button>
+                </p>
                 <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='student'"><b>{{isSelf(key)}}</b>: {{value}}</p>
               </div>
             </div>

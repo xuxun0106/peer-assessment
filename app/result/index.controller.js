@@ -322,11 +322,23 @@
           return !isFreeRider(spa) && !isSuspicious(sapa);
         };
 
-        $scope.deleteComment = function(questionIndex, student) {
-          ResultService.GetByUser(student, group).then(function(result) {
+        $scope.deleteText = function(questionIndex, receiver, author) {
+          ResultService.GetByUser(author, group).then(function(result) {
+            result.result[receiver][questionIndex].splice(questionIndex, 1);
+            ResultService.Update(result).then(function() {
+              $scope.results[questionIndex][receiver] = null;
+            });
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+        };
+
+        $scope.deleteComment = function(questionIndex, author) {
+          ResultService.GetByUser(author, group).then(function(result) {
             result.comments[questionIndex] = null;
             ResultService.Update(result).then(function() {
-              $scope.comments[questionIndex][student] = null;
+              $scope.comments[questionIndex][author] = null;
             });
           })
           .catch(function(err) {
