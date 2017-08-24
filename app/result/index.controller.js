@@ -324,7 +324,7 @@
 
         $scope.deleteText = function(questionIndex, receiver, author) {
           ResultService.GetByUser(author, group).then(function(result) {
-            result.result[receiver][questionIndex].splice(questionIndex, 1);
+            result.result[receiver].splice(questionIndex, 1);
             ResultService.Update(result).then(function() {
               $scope.results[questionIndex][receiver] = null;
             });
