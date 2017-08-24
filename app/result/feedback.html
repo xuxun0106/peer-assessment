@@ -34,8 +34,8 @@
                 <tr>
                   <th scope="row">Flag</th>
                   <td ng-repeat="scoreReceiver in groupMembers track by $index">
-                    <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-flag"></span>
-                    <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
+                    <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-ok"></span>
+                    <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-warning-sign"></span>
                     <span ng-if="flag(overallSAPA[scoreReceiver])" class="yellow glyphicon glyphicon-flag"></span>
                   </td>
                 </tr>
@@ -68,8 +68,8 @@
                     <td>{{results[questionIndex].spa[scoreReceiver]}}</td>
                     <td>{{results[questionIndex].sapa[scoreReceiver]}}</td>
                     <td ng-if="user.type==='instructor'">
-                      <span ng-if="isOk(results[questionIndex].spa[scoreReceiver], results[questionIndex].sapa[scoreReceiver])" class="glyphicon glyphicon-flag"></span>
-                      <span ng-if="freeRider(results[questionIndex].spa[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
+                      <span ng-if="isOk(results[questionIndex].spa[scoreReceiver], results[questionIndex].sapa[scoreReceiver])" class="glyphicon glyphicon-ok"></span>
+                      <span ng-if="freeRider(results[questionIndex].spa[scoreReceiver])" class="red glyphicon glyphicon-warning-sign"></span>
                       <span ng-if="flag(results[questionIndex].sapa[scoreReceiver])" class="yellow glyphicon glyphicon-flag"></span>
                     </td>
                   </tr>
