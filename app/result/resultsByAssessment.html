@@ -35,9 +35,9 @@
               <tr>
                 <th scope="row">Flag</th>
                 <td ng-repeat="scoreReceiver in groupMembers[groupIndex] track by $index">
-                  <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-flag"></span>
+                  <span ng-if="isOk(overallSPA[scoreReceiver], overallSAPA[scoreReceiver])" class="glyphicon glyphicon-ok"></span>
                   <span ng-if="freeRider(overallSPA[scoreReceiver])" class="red glyphicon glyphicon-flag"></span>
-                  <span ng-if="flag(overallSAPA[scoreReceiver])" class="yellow glyphicon glyphicon-flag"></span>
+                  <span ng-if="flag(overallSAPA[scoreReceiver])" class="yellow glyphicon glyphicon-warning-sign"></span>
                 </td>
               </tr>
             </tbody>
