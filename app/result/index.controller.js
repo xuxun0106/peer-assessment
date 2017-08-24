@@ -327,6 +327,7 @@
             result.result[receiver][questionIndex] = null;
             ResultService.Update(result).then(function() {
               delete $scope.results[questionIndex][receiver][author];
+              console.log($scope.results[questionIndex][receiver]);
             });
           })
           .catch(function(err) {
