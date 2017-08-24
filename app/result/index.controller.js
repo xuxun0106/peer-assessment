@@ -326,7 +326,7 @@
           ResultService.GetByUser(author, group).then(function(result) {
             result.result[receiver][questionIndex] = null;
             ResultService.Update(result).then(function() {
-              $scope.results[questionIndex][receiver] = null;
+              delete $scope.results[questionIndex][receiver][author];
             });
           })
           .catch(function(err) {
