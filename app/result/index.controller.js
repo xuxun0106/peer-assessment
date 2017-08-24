@@ -328,7 +328,7 @@
             ResultService.Update(result).then(function() {
               delete $scope.results[questionIndex][receiver][author];
               if ($scope.results[questionIndex][receiver] === {}) {
-                delete $scope.results[questionIndex][receiver]
+                delete $scope.results[questionIndex][receiver];
               }
             });
           })
