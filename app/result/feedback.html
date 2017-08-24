@@ -105,7 +105,7 @@
                           <span class="glyphicon glyphicon-trash"></span>
                   </button>
                 </p>
-                <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='student'"><b>{{isSelf(key)}}</b>: {{value}}</p>
+                <p class="well" ng-repeat="(key, value) in results[questionIndex][scoreReceiver]" ng-if="user.type==='student' && value"><b>{{isSelf(key)}}</b>: {{value}}</p>
               </div>
             </div>
           </div>
