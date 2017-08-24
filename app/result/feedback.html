@@ -55,7 +55,7 @@
                 <thead>
                   <th></th>
                   <th ng-repeat="scoreGiver in groupMembers track by $index" ng-init="giverIndex = $index" ng-if="user.type==='instructor'">{{scoreGiver}}</th>
-                  <th ng-repeat="scoreGiver in groupMembers track by $index" ng-init="giverIndex = $index" ng-if="user.type==='student'">{{isSelf(scoreGiver)}}</th>
+                  <th ng-repeat="scoreGiver in groupMembers track by $index" ng-init="giverIndex = $index" ng-if="user.type==='student'">Member</th>
                   <th>SPA</th>
                   <th>SAPA</th>
                   <th ng-if="user.type==='instructor'">Flag</th>
