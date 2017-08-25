@@ -22,6 +22,7 @@ router.post('/', function (req, res) {
         json: true
     }, function (error, response, body) {
         if (error) {
+          console.log(error);
             return res.render('login', { error: 'An error occurred' });
         }
 

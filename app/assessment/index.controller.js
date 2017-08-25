@@ -22,25 +22,29 @@
               instructorGet();
             }
             if (vm.usertype === 'student') {
-              //UserService.GetCourses().then(function(data) {
-              var data = user.course;
-              vm.studentOngoing = [];
-              vm.studentPast = [];
-              for (var n = 0; n < data.length; n++) {
-                AssessmentService.GetByCourse(data[n].code).then(function(a) {
-                  for (var i = 0; i < a.length; i++) {
-                    if (ongoing(a[i])) {
-                      vm.studentOngoing.push(a[i]);
-                    } else if (past(a[i])) {
-                      vm.studentPast.push(a[i]);
+              UserService.GetCourses().then(function(data) {
+              //var data = user.course;
+
+              if (data){
+                vm.studentOngoing = [];
+                vm.studentPast = [];
+                for (var n = 0; n < data.length; n++) {
+                  AssessmentService.GetByCourse(data[n].code).then(function(a) {
+                    for (var i = 0; i < a.length; i++) {
+                      if (ongoing(a[i])) {
+                        vm.studentOngoing.push(a[i]);
+                      } else if (past(a[i])) {
+                        vm.studentPast.push(a[i]);
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
-              //})
-              // .catch(function(err) {
-              //   FlashService.Error(err);
-              // });
+
+              })
+              .catch(function(err) {
+                FlashService.Error(err);
+              });
             }
           });
         }

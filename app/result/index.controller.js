@@ -27,22 +27,26 @@
                   FlashService.Error(err);
                 });
             } else {
-              //UserService.GetCourses().then(function(course) {
-              var course = user.course;
-              for (var n = 0; n < course.length; n++) {
-                AssessmentService.GetByCourse(course[n].code).then(function(assessments) {
-                  for (var i = 0; i < assessments.length; i++) {
-                    var assessment = assessments[i];
-                    if (assessment.publish) {
-                      publish(user.username, assessment);
+              UserService.GetCourses().then(function(course) {
+              //var course = user.course;
+
+              if (course) {
+                for (var n = 0; n < course.length; n++) {
+                  AssessmentService.GetByCourse(course[n].code).then(function(assessments) {
+                    for (var i = 0; i < assessments.length; i++) {
+                      var assessment = assessments[i];
+                      if (assessment.publish) {
+                        publish(user.username, assessment);
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
-              //})
-              // .catch(function(err) {
-              //   FlashService.Error(err);
-              // });
+
+              })
+              .catch(function(err) {
+                FlashService.Error(err);
+              });
             }
           })
           .catch(function(err) {
@@ -268,9 +272,6 @@
           });
         };
 
-        $scope.hasProblem(group) {
-          
-        };
 
       }
     ])
