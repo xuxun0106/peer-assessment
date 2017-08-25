@@ -5,6 +5,8 @@
 <button type="button" class="btn btn-default" ng-click="downloadGrades()">Download modified grades</button>
 <button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="publishState">Publish results</button>
 <button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="!publishState">Make results private</button>
+<br>
+<button type="button" class="btn btn-default" ng-click="showProblemGroup()">Show problem groups</button>
 
 <div class="display">
   <div class="panel panel-primary" ng-repeat="group in groups track by $index" ng-init="groupIndex = $index">

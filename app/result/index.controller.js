@@ -268,6 +268,10 @@
           });
         };
 
+        $scope.hasProblem(group) {
+          
+        };
+
       }
     ])
     .controller('FeedbackController', [
