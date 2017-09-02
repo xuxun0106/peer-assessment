@@ -6,7 +6,6 @@ var jwt = require('jsonwebtoken');
 var https = require('https');
 var userService = require('services/user.service');
 
-routes
 router.post('/authenticate', authenticateUser);
 router.get('/current', getCurrentUser);
 router.get('/allcourses', getAllCourses);
