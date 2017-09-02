@@ -22,8 +22,8 @@
               instructorGet();
             }
             if (vm.usertype === 'student') {
-              //UserService.GetCourses().then(function(data) {
-              var data = user.course;
+              UserService.GetCourses().then(function(data) {
+              //var data = user.course;
 
               if (data){
                 vm.studentOngoing = [];
@@ -41,10 +41,11 @@
                 }
               }
 
-              // })
-              // .catch(function(err) {
-              //   FlashService.Error(err);
-              // });
+              })
+              .catch(function(err) {
+                FlashService.Error(err);
+              });
+              
             }
           });
         }

@@ -27,8 +27,8 @@
                   FlashService.Error(err);
                 });
             } else {
-              //UserService.GetCourses().then(function(course) {
-              var course = user.course;
+              UserService.GetCourses().then(function(course) {
+              //var course = user.course;
 
               if (course) {
                 for (var n = 0; n < course.length; n++) {
@@ -43,10 +43,11 @@
                 }
               }
 
-              // })
-              // .catch(function(err) {
-              //   FlashService.Error(err);
-              // });
+              })
+              .catch(function(err) {
+                FlashService.Error(err);
+              });
+
             }
           })
           .catch(function(err) {
@@ -446,7 +447,7 @@
   }
 
   function isSuspicious(sapa) {
-    if (sapa >= 0.90 && sapa <= 1.10)
+    if (sapa > 0.90 && sapa < 1.10)
       return false;
     return true;
   }
