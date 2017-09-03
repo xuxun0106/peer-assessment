@@ -91,7 +91,8 @@
                 </thead>
                 <tbody>
                   <tr ng-repeat="scoreReceiver in groupMembers track by $index" ng-init="receiverIndex = $index">
-                    <th scope="row">{{scoreReceiver}}</th>
+                    <th scope="row" ng-if="user.type==='instructor'">{{scoreReceiver}}</th>
+                    <th scope="row" ng-if="user.type==='student'">{{isSelf(scoreReceiver)}}</th>
                     <td ng-repeat="option in assessment.questions[questionIndex].options track by $index">{{results[questionIndex][scoreReceiver][option] || '-'}}</td>
                   </tr>
                 </tbody>
