@@ -25,7 +25,7 @@
               //UserService.GetCourses().then(function(data) {
               var data = user.course;
 
-              if (data){
+              if (data) {
                 vm.studentOngoing = [];
                 vm.studentPast = [];
                 for (var n = 0; n < data.length; n++) {
@@ -343,6 +343,7 @@
             title: "Select questions",
             selected: $scope.questions
           }, function(result) {
+            document.body.className += ' modal-open';
             if (result) {
               $scope.questions = result.questions;
             }
@@ -354,6 +355,7 @@
             title: "Paste the group infomation from CATe",
             groups: $scope.groups
           }, function(result) {
+            document.body.className += ' modal-open';
             if (result) {
               $scope.groups = result.groups;
             }
@@ -429,6 +431,7 @@
             title: "You can drag and drop the questions to change the order",
             selected: $scope.selected
           }, function(result) {
+            document.body.className += ' modal-open';
             if (result) {
               $scope.selected = result.selected;
             }
@@ -972,6 +975,7 @@
           openModal(ModalService, "assessment/addGroup.html", "UploadGroupsController", {
             title: "Paste the group infomation from CATe"
           }, function(result) {
+            document.body.className += ' modal-open';
             if (result) {
               var gs = result.groups;
               for (var n = 0, len = gs.length; n < len; n++) {
