@@ -121,14 +121,6 @@
         });
     };
 
-    // vm.editQuestion = function(q, index){
-    //  var myNode = document.querySelector('.panel');
-    //  for (var n = 0; n < index; n++) {
-    //    myEl = myEl.next();
-    //  }
-    //
-    // };
-
     function loadHtml(path) {
       $templateRequest(path).then(function(html) {
         var template = angular.element(html);
