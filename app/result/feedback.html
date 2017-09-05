@@ -5,11 +5,11 @@
         <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">{{assessment.courseName+" "+assessment.name}}</h4>
         <br>
-        <p>The SPA factors indicate the performance of a person compared to the average level of the group.</p>
-        <p>The SAPA factors indicate a person's self-rating compared to ratings from other members.</p>
-        <p ng-if="user.type==='instructor'">The status icons indicate the potential status of a person (black tick: no problem,
-          <font class="yellow">yellow warning sign</font>: cheater,
-          <font class="red">red flag</font>: free-rider).</p>
+        <p>An SPA factors indicates the performance of a person compared to the average level of the group.</p>
+        <p>An SAPA factors indicateS a person's self-rating compared to ratings from other members.</p>
+        <p ng-if="user.type==='instructor'">A status icon indicates the potential status of a person (black tick: no problem,
+          <font class="yellow">yellow warning sign</font>: possible cheater,
+          <font class="red">red flag</font>: possible free-rider).</p>
       </div>
       <div class="modal-body">
         <div ng-if="user.type==='instructor' && numSummertive!==0" class="panel panel-default">

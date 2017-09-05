@@ -447,7 +447,7 @@
   }
 
   function isSuspicious(sapa) {
-    if (sapa > 0.90 && sapa < 1.10)
+    if (sapa < 1.10)
       return false;
     return true;
   }

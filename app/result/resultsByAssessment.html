@@ -5,7 +5,13 @@
 <button type="button" class="btn btn-default" ng-click="downloadGrades()">Download modified grades</button>
 <button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="publishState">Publish results</button>
 <button type="button" class="btn btn-default" ng-click="publishResults()" ng-hide="!publishState">Make results private</button>
-
+<div class="display">
+  <p>An SPA factors indicates the performance of a person compared to the average level of the group.</p>
+  <p>An SAPA factors indicateS a person's self-rating compared to ratings from other members.</p>
+  <p ng-if="user.type==='instructor'">A status icon indicates the potential status of a person (black tick: no problem,
+    <font class="yellow">yellow warning sign</font>: possible cheater,
+    <font class="red">red flag</font>: possible free-rider).</p>
+</div>
 <div class="display">
   <div class="panel panel-primary" ng-repeat="group in groups track by $index" ng-init="groupIndex = $index">
     <div class="panel-heading">
