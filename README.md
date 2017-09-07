@@ -16,7 +16,7 @@ MongoDB - the database
 Once Node.js and MongoDB is stored, we need package managers NPM (for server side) and bower (for client side). NPM usually comes with Node.js. To install bower, simply run
 
 ```
-$ npm install -g bower
+npm install -g bower
 ```
 
 ### Installing
